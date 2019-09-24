@@ -45,6 +45,8 @@ function run_source_tests {
     if [ "$SONARQUBE" ]; then
     	sonarqube_setup
     	opt_build_wrapper="sonarqube_build_wrapper"
+    else
+    	opt_build_wrapper=""
     fi
 
     ici_run "${BUILDER}_setup" ici_quiet builder_setup
