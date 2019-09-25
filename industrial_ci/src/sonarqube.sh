@@ -16,6 +16,7 @@
 # limitations under the License.
 
 function sonarqube_setup {
+	mkdir -p "~/sonar"
     ici_import_url "~/sonar" "https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.0.0.1744-linux.zip"
     ici_import_url "~/" "https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip"
     

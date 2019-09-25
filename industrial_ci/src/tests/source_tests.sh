@@ -43,7 +43,7 @@ function run_source_tests {
     fi
     
     if [ -n "$SONARQUBE" ]; then
-    	ici_run "sonarwube_setup" sonarqube_setup
+    	ici_run "sonarqube_setup" sonarqube_setup
     fi
 
     ici_run "${BUILDER}_setup" ici_quiet builder_setup
