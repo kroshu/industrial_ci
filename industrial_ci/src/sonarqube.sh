@@ -25,7 +25,7 @@ function sonarqube_setup {
 }
 
 function sonarqube_build_wrapper {
-    build-wrapper --out-dir "${current_ws}/sonar/bw_output" "$@"
+    build-wrapper --out-dir "~/sonar/bw_output" "$@"
 }
 
 function sonarqube_analyze {
