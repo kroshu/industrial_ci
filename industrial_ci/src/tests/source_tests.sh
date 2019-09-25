@@ -56,6 +56,8 @@ function run_source_tests {
         ici_with_ws "$upstream_ws" ici_build_workspace "upstream" "$extend" "$upstream_ws"
         extend="$upstream_ws/install"
     fi
+    
+    whoami
 
 	if [ -n "$SONARQUBE" ]; then
     	ici_with_ws "$target_ws" sonarqube_build_wrapper ici_build_workspace "target" "$extend" "$target_ws"
