@@ -60,7 +60,7 @@ function run_source_tests {
     whoami
 
 	if [ -n "$SONARQUBE" ]; then
-    	ici_with_ws "$target_ws" sonarqube_build_wrapper ici_build_workspace "target" "$extend" "$target_ws"
+    	ici_with_ws "$target_ws" ici_build_workspace "target" "$extend" "$target_ws"
     else
     	ici_with_ws "$target_ws" ici_build_workspace "target" "$extend" "$target_ws"
     fi
