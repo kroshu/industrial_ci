@@ -19,6 +19,7 @@ function sonarqube_setup {
 	mkdir -p ~/sonar
     ici_import_url ~/sonar https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.0.0.1744-linux.zip
     ici_import_url ~/sonar https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip
+    ici_asroot chmod +x ~/sonar/build-wrapper-linux-x86/build-wrapper-linux-x86-64
     
     ici_asroot ln -s ~/sonar/build-wrapper-linux-x86/build-wrapper-linux-x86-64 /usr/local/bin/build-wrapper
     ici_asroot ln -s ~/sonar/sonar-scanner-4.0.0.1744-linux/bin/sonar-scanner /usr/local/bin/sonar-scanner
@@ -30,7 +31,7 @@ function sonarqube_setup {
 }
 
 function sonarqube_build_wrapper {
-    ici_asroot ~/sonar/build-wrapper-linux-x86/build-wrapper-linux-x86-64 --out-dir "~/sonar/bw_output" "$@"
+    ~/sonar/build-wrapper-linux-x86/build-wrapper-linux-x86-64 --out-dir "~/sonar/bw_output" "$@"
 }
 
 function sonarqube_analyze {
