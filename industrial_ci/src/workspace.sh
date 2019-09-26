@@ -97,7 +97,7 @@ function ici_import_file {
     case "$file" in
     *.zip|*.tar|*.tar.*|*.tgz|*.tbz2)
         ici_install_pkgs_for_command bsdtar bsdtar
-        bsdtar -C "$sourcespace" -xf "$file"
+        bsdtar -o -C "$sourcespace" -xf "$file"
         ;;
     *)
         ici_install_pkgs_for_command vcs python-vcstool
@@ -118,7 +118,7 @@ function ici_import_url {
     case "$url" in
     *.zip|*.tar|*.tar.*|*.tgz|*.tbz2)
         ici_install_pkgs_for_command bsdtar bsdtar
-        processor=(bsdtar -C "$sourcespace" -xf-)
+        processor=(bsdtar -o -C "$sourcespace" -xf-)
         ;;
     *)
         ici_install_pkgs_for_command vcs python-vcstool
