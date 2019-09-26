@@ -24,7 +24,7 @@ function sonarqube_setup {
     ici_asroot ln -s ~/sonar/sonar-scanner-4.0.0.1744-linux/bin/sonar-scanner /usr/local/bin/sonar-scanner
     ls -l ~/sonar
     ls -l /usr/local/bin
-    ici_asroot chmod root:root ~/sonar/build-wrapper-linux-x86/build-wrapper-linux-x86-64
+    ici_asroot chown root:root ~/sonar/build-wrapper-linux-x86/build-wrapper-linux-x86-64
     ls -l ~/sonar
     ls -l /usr/local/bin
 }
