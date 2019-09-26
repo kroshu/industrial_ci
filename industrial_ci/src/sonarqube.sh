@@ -24,24 +24,8 @@ function sonarqube_setup {
     
     ln -s ~/sonar/build-wrapper-linux-x86/build-wrapper-linux-x86-64 /usr/local/bin/build-wrapper
     ln -s ~/sonar/sonar-scanner-4.0.0.1744-linux/bin/sonar-scanner /usr/local/bin/sonar-scanner
-    which build-wrapper
-}
-
-function sonarqube_build_wrapper {
-	local build_command=$1; shift
-	
-	#echo "source \"${ICI_SRC_PATH}/util.sh\"
-	#source \"${ICI_SRC_PATH}/workspace.sh\"
-	#source \"${ICI_SRC_PATH}/builders/$BUILDER.sh\"
-	set +H
-	echo "#!/bin/bash
-	${build_command}" > /root/sonar/build_command_file
-	set -H
-	
-	chmod +x /root/sonar/build_command_file
-    build-wrapper --out-dir "/root/sonar/bw_output" source /root/sonar/build_command_file "$@"
     
-    rm /root/sonar/build_command_file
+    export BUILD_WRAPPER="build-wrapper --out-dir /root/sonar/bw_output"
 }
 
 function sonarqube_analyze {
