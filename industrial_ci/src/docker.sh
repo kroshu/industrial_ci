@@ -39,8 +39,8 @@ function ici_require_run_in_docker() {
     local docker_target_repo_path=/root/src/$TARGET_REPO_NAME
     local docker_ici_src_path=/root/ici
     ici_run_cmd_in_docker -e "TARGET_REPO_PATH=$docker_target_repo_path" \
-                          -v "$TARGET_REPO_PATH/:$docker_target_repo_path:ro" \
-                          -v "$ICI_SRC_PATH/:$docker_ici_src_path:ro" \
+                          -v "$TARGET_REPO_PATH/:$docker_target_repo_path" \
+                          -v "$ICI_SRC_PATH/:$docker_ici_src_path" \
                           -t \
                           --entrypoint '' \
                           -w "$docker_target_repo_path" \
