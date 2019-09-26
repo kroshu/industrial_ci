@@ -20,23 +20,20 @@ function sonarqube_setup {
     ici_import_url ~/sonar https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.0.0.1744-linux.zip
     ici_import_url ~/sonar https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip
     ici_asroot chmod +x ~/sonar/build-wrapper-linux-x86/build-wrapper-linux-x86-64
+    ici_asroot chown root:root ~/sonar/build-wrapper-linux-x86/build-wrapper-linux-x86-64
     
     ici_asroot ln -s ~/sonar/build-wrapper-linux-x86/build-wrapper-linux-x86-64 /usr/local/bin/build-wrapper
     ici_asroot ln -s ~/sonar/sonar-scanner-4.0.0.1744-linux/bin/sonar-scanner /usr/local/bin/sonar-scanner
-    ls -l ~/sonar
-    ls -l /usr/local/bin
-    ici_asroot chown root:root ~/sonar/build-wrapper-linux-x86/build-wrapper-linux-x86-64
-    ls -l ~/sonar
-    ls -l /usr/local/bin
 }
 
 function sonarqube_build_wrapper {
-    ~/sonar/build-wrapper-linux-x86/build-wrapper-linux-x86-64 --out-dir "~/sonar/bw_output" "$@"
+	mkdir -p "${current_ws}/sonar/bw_output"
+    build-wrapper --out-dir "${current_ws}/sonar/bw_output" "$@"
 }
 
 function sonarqube_analyze {
     ici_run "sonarqube_analyze_${current_ws}" \
-	    sonar-scanner -Dsonar.projectBaseDir="$current_ws/src/$TARGET_REPO_NAME" \
+	    sonar-scanner -Dsonar.projectBaseDir="${current_ws}/src/$TARGET_REPO_NAME" \
 	    			  -Dsonar.working.directory="~/sonar/working_directory" \
 	    			  -Dsonar.cfamily.build-wrapper-output="${current_ws}/sonar/bw_output" 
 	    			  #-Dsonar.cfamily.gcov.reportsPath=/root/catkin_ws/build/beginner_tutorials/test_coverage
