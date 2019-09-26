@@ -24,11 +24,12 @@ function sonarqube_setup {
     
     ln -s ~/sonar/build-wrapper-linux-x86/build-wrapper-linux-x86-64 /usr/local/bin/build-wrapper
     ln -s ~/sonar/sonar-scanner-4.0.0.1744-linux/bin/sonar-scanner /usr/local/bin/sonar-scanner
-    
+    which build-wrapper
 }
 
 function sonarqube_build_wrapper {
 	mkdir -p "${current_ws}/sonar/bw_output"
+	which build-wrapper
     build-wrapper --out-dir "${current_ws}/sonar/bw_output" "$@"
 }
 
