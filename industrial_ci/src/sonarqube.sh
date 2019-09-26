@@ -29,9 +29,18 @@ function sonarqube_setup {
 
 function sonarqube_build_wrapper {
 	local build_command=$1; shift
-	echo "${build_command}" > /root/sonar/build_command_file
+	
+	#echo "source \"${ICI_SRC_PATH}/util.sh\"
+	#source \"${ICI_SRC_PATH}/workspace.sh\"
+	#source \"${ICI_SRC_PATH}/builders/$BUILDER.sh\"
+	set +H
+	echo "#!/bin/bash
+	${build_command}" > /root/sonar/build_command_file
+	set -H
+	
 	chmod +x /root/sonar/build_command_file
-    build-wrapper --out-dir "/root/sonar/bw_output" /root/sonar/build_command_file "$@"
+    build-wrapper --out-dir "/root/sonar/bw_output" source /root/sonar/build_command_file "$@"
+    
     rm /root/sonar/build_command_file
 }
 
