@@ -28,9 +28,10 @@ function sonarqube_setup {
 }
 
 function sonarqube_build_wrapper {
-	mkdir -p /root/sonar/bw_output
-	which build-wrapper
-    build-wrapper --out-dir "/root/sonar/bw_output" "$@"
+	local build_command=$1; shift
+	echo "${build_command}" > /root/sonar/build_command_file
+    build-wrapper --out-dir "/root/sonar/bw_output" /root/sonar/build_command_file "$@"
+    rm /root/sonar/build_command_file
 }
 
 function sonarqube_analyze {
