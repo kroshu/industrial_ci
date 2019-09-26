@@ -29,7 +29,7 @@ function builder_run_build {
     local extend=$1; shift
     local ws=$1; shift
     if [ -n "$BUILD_WRAPPER" ]; then
-    	local IFS =' '
+    	local IFS=' '
     	read -ra build_wrapper <<< "$BUILD_WRAPPER"
     	ici_exec_in_workspace "$extend" "$ws" ${build_wrapper[@]} colcon build --event-handlers "${_colcon_event_handlers[@]}" "$@"
     else
