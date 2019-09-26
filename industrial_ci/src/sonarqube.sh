@@ -30,7 +30,7 @@ function sonarqube_setup {
 }
 
 function sonarqube_build_wrapper {
-    build-wrapper --out-dir "~/sonar/bw_output" "$@"
+    ~/sonar/build-wrapper-linux-x86/build-wrapper-linux-x86-64 --out-dir "~/sonar/bw_output" "$@"
 }
 
 function sonarqube_analyze {
