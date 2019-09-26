@@ -58,6 +58,7 @@ function run_source_tests {
     fi
     
     whoami
+    cat /etc/passwd
 
 	if [ -n "$SONARQUBE" ]; then
     	ici_with_ws "$target_ws" sonarqube_build_wrapper ici_build_workspace "target" "$extend" "$target_ws"
