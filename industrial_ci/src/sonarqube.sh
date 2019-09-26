@@ -28,7 +28,7 @@ function sonarqube_setup {
 }
 
 function sonarqube_build_wrapper {
-	mkdir -p "${current_ws}/sonar/bw_output"
+	mkdir -p ${current_ws}/sonar/bw_output
 	which build-wrapper
     build-wrapper --out-dir "${current_ws}/sonar/bw_output" "$@"
 }
