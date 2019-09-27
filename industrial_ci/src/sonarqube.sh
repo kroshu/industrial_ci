@@ -41,10 +41,19 @@ function sonarqube_setup {
     fi
 }
 
+function sonarqube_generate_coverage_report {
+	if [ -n "$BUILD_WRAPPER" ]
+		local BUILD_WRAPPER_TMP="$BUILD_WRAPPER"
+		unset BUILD_WRAPPER
+		builder_run_build "$@" --cmake-target coverage --packages-select examples_rclcpp_minimal_subscriber
+		export BUILD_WRAPPER="$BUILD_WRAPPER_TMP"
+	fi
+}
+
 function sonarqube_analyze {
     ici_run "sonarqube_analyze_${current_ws}" \
 	    sonar-scanner -Dsonar.projectBaseDir="${current_ws}/src/$TARGET_REPO_NAME" \
 	    			  -Dsonar.working.directory="/root/sonar/working_directory" \
 	    			  -Dsonar.cfamily.build-wrapper-output="/root/sonar/bw_output" 
-	    			  #-Dsonar.cfamily.gcov.reportsPath=/root/catkin_ws/build/beginner_tutorials/test_coverage
+	    			  -Dsonar.cfamily.gcov.reportsPath="/root/${current_ws}/build/${TARGET_REPO_NAME}/test_coverage"
 }
