@@ -17,19 +17,23 @@
 
 function sonarqube_setup {
 	mkdir -p ~/sonar
-    ici_import_url ~/sonar https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.0.0.1744-linux.zip
-    ici_import_url ~/sonar https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip
+	
+	ici_install_pkgs_for_command wget wget
+    wget -P ~/sonar/downloads https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip
+    wget -P ~/sonar/downloads https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.0.0.1744-linux.zip
     chmod +x ~/sonar/build-wrapper-linux-x86/build-wrapper-linux-x86-64
-    chmod +x ~/sonar/sonar-scanner-4.0.0.1744-linux/bin/sonar-scanner 
-    chown root:root ~/sonar/build-wrapper-linux-x86/build-wrapper-linux-x86-64
+    #chown root:root ~/sonar/build-wrapper-linux-x86/build-wrapper-linux-x86-64
     
-    ln -s ~/sonar/build-wrapper-linux-x86/build-wrapper-linux-x86-64 /usr/local/bin/build-wrapper
-    ln -s ~/sonar/sonar-scanner-4.0.0.1744-linux/bin/sonar-scanner /usr/local/bin/sonar-scanner
+    ici_install_pkgs_for_command unzip unzip
+    unzip ~/sonar/downloads/build-wrapper-linux-x86.zip -d ~/sonar/tools
+    unzip ~/sonar/downloads/sonar-scanner-cli-4.0.0.1744-linux.zip -d ~/sonar/tools
     
-    ici_asroot apt-get install -y -qq default-jre
-    export JAVA_HOME=/usr/bin/java
-    whereis java
-    export BUILD_WRAPPER="build-wrapper --out-dir /root/sonar/bw_output"
+    
+    ln -s ~/sonar/tools/build-wrapper-linux-x86/build-wrapper-linux-x86-64 /usr/local/bin/sonar-build-wrapper
+    ln -s ~/sonar/tools/sonar-scanner-4.0.0.1744-linux/bin/sonar-scanner /usr/local/bin/sonar-scanner
+    
+    ici_asroot apt-get install -y default-jre
+    export BUILD_WRAPPER="sonar-build-wrapper --out-dir /root/sonar/bw_output"
 }
 
 function sonarqube_analyze {
