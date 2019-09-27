@@ -40,6 +40,6 @@ function sonarqube_analyze {
     ici_run "sonarqube_analyze_${current_ws}" \
 	    sonar-scanner -Dsonar.projectBaseDir="${current_ws}/src/$TARGET_REPO_NAME" \
 	    			  -Dsonar.working.directory="~/sonar/working_directory" \
-	    			  -Dsonar.cfamily.build-wrapper-output="${current_ws}/sonar/bw_output" 
+	    			  -Dsonar.cfamily.build-wrapper-output="/root/sonar/bw_output" 
 	    			  #-Dsonar.cfamily.gcov.reportsPath=/root/catkin_ws/build/beginner_tutorials/test_coverage
 }
