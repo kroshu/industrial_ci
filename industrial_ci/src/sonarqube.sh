@@ -36,6 +36,9 @@ function sonarqube_setup {
     
     ici_asroot apt-get install -y default-jre
     export BUILD_WRAPPER="sonar-build-wrapper --out-dir /root/sonar/bw_output"
+    if [ -n "$TEST_COVERAGE" ]; then
+    	export TARGET_CMAKE_ARGS="${TARGET_CMAKE_ARGS} -DTEST_COVERAGE=on"
+    fi
 }
 
 function sonarqube_analyze {
