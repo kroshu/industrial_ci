@@ -28,7 +28,7 @@ function sonarqube_setup {
     
     ici_asroot apt-get install -y -qq default-jre
     export JAVA_HOME=/usr/bin/java
-    
+    whereis java
     export BUILD_WRAPPER="build-wrapper --out-dir /root/sonar/bw_output"
 }
 
