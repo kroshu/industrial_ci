@@ -26,8 +26,10 @@ function sonarqube_setup {
     ln -s ~/sonar/build-wrapper-linux-x86/build-wrapper-linux-x86-64 /usr/local/bin/build-wrapper
     ln -s ~/sonar/sonar-scanner-4.0.0.1744-linux/bin/sonar-scanner /usr/local/bin/sonar-scanner
     
+    ici_asroot apt-get install -y -qq default-jre
+    export JAVA_HOME=/usr/bin/java
+    
     export BUILD_WRAPPER="build-wrapper --out-dir /root/sonar/bw_output"
-    which java
 }
 
 function sonarqube_analyze {
