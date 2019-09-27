@@ -32,6 +32,8 @@ function sonarqube_setup {
     ln -s ~/sonar/tools/build-wrapper-linux-x86/build-wrapper-linux-x86-64 /usr/local/bin/sonar-build-wrapper
     ln -s ~/sonar/tools/sonar-scanner-4.0.0.1744-linux/bin/sonar-scanner /usr/local/bin/sonar-scanner
     
+    wget -P /usr/lib/cmake/CodeCoverage "https://raw.githubusercontent.com/kroshu/kroshu-tools/master/cmake/CodeCoverage.cmake" 
+    
     ici_asroot apt-get install -y default-jre
     export BUILD_WRAPPER="sonar-build-wrapper --out-dir /root/sonar/bw_output"
 }
