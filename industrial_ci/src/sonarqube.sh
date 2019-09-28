@@ -42,7 +42,7 @@ function sonarqube_setup {
 }
 
 function sonarqube_generate_coverage_report {
-	if [ -n "$BUILD_WRAPPER" ]
+	if [ -n "$BUILD_WRAPPER" ]; then
 		local BUILD_WRAPPER_TMP="$BUILD_WRAPPER"
 		unset BUILD_WRAPPER
 		builder_run_build "$@" --cmake-target coverage --packages-select examples_rclcpp_minimal_subscriber
