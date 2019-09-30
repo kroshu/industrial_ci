@@ -65,7 +65,7 @@ function run_source_tests {
     
     if [ -n "$SONARQUBE" ]; then
 		if [ -n "$TEST_COVERAGE" ]; then
-			ici_with_ws "$target_ws" ici_run "generating_coverage_reports" builder_run_build "$extend" "$target_ws" --cmake-target coverage --packages-select examples_rclcpp_minimal_subscriber
+			ici_with_ws "$target_ws" ici_run "generating_coverage_reports" sonarqube_generate_coverage_report "$extend" "$target_ws"
 		fi
     	ici_with_ws "$target_ws" sonarqube_analyze
     fi
