@@ -67,7 +67,7 @@ function run_source_tests {
 		if [ -n "$TEST_COVERAGE" ]; then
 			ici_with_ws "$target_ws" ici_run "generating_coverage_reports" sonarqube_generate_coverage_report "$extend" "$target_ws"
 		fi
-    	ici_with_ws "$target_ws" ici_run "analyzing_target_ws" sonarqube_analyze
+    	ici_with_ws "$target_ws" ici_run "analyzing_target_ws" sonarqube_analyze "target"
     fi
 
     if [ "$CATKIN_LINT" == "true" ] || [ "$CATKIN_LINT" == "pedantic" ]; then
