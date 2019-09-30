@@ -54,6 +54,6 @@ function sonarqube_analyze {
 	local ws=$1; shift
     sonar-scanner -Dsonar.projectBaseDir="${current_ws}/src/$TARGET_REPO_NAME" \
     			  -Dsonar.working.directory="/root/sonar/working_directory" \
-    			  -Dsonar.cfamily.build-wrapper-output="/root/sonar/bw_output" 
+    			  -Dsonar.cfamily.build-wrapper-output="/root/sonar/bw_output" \
     			  -Dsonar.cfamily.gcov.reportsPath="${current_ws}/build/examples_rclcpp_minimal_subscriber/test_coverage"
 }
