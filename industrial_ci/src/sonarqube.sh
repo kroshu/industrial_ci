@@ -51,9 +51,9 @@ function sonarqube_generate_coverage_report {
 }
 
 function sonarqube_analyze {
-    ici_run "sonarqube_analyze_${current_ws}" \
-	    sonar-scanner -Dsonar.projectBaseDir="${current_ws}/src/$TARGET_REPO_NAME" \
-	    			  -Dsonar.working.directory="/root/sonar/working_directory" \
-	    			  -Dsonar.cfamily.build-wrapper-output="/root/sonar/bw_output" 
-	    			  -Dsonar.cfamily.gcov.reportsPath="/root/${current_ws}/build/${TARGET_REPO_NAME}/test_coverage"
+	local ws=$1; shift
+    sonar-scanner -Dsonar.projectBaseDir="${current_ws}/src/$TARGET_REPO_NAME" \
+    			  -Dsonar.working.directory="/root/sonar/working_directory" \
+    			  -Dsonar.cfamily.build-wrapper-output="/root/sonar/bw_output" 
+    			  -Dsonar.cfamily.gcov.reportsPath="${current_ws}/build/${TARGET_REPO_NAME}/test_coverage"
 }
