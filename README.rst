@@ -1,8 +1,8 @@
 ================
 Industrial CI
 ================
-.. image:: https://travis-ci.org/ros-industrial/industrial_ci.svg?branch=master
-    :target: https://travis-ci.org/ros-industrial/industrial_ci
+.. image:: https://travis-ci.com/kroshu/industrial_ci.svg?branch=master
+    :target: https://travis-ci.com/kroshu/industrial_ci
     :alt: Travis CI status
 .. image:: https://gitlab.com/ipa-mdl/industrial_ci/badges/master/pipeline.svg
     :target: https://gitlab.com/ipa-mdl/industrial_ci/commits/master
@@ -22,6 +22,11 @@ Detailed documentation
 ========================
 
 Other than the brief introduction in this page, you can also check `the detailed doc here <./doc/index.rst>`__.
+
+SonarQube integration
+========================
+
+This fork of the `ros-industrial/industrial_ci <https://github.com/ros-industrial/industrial_ci>`__ adds SonarQube integration and test coverage report generation capabilities. For information on how to use these options, check `the SonarQube integration doc here <./doc/sonar.md>`__. Please note, that the current solution is not tested, furthermore it only supports a single ROS package/git repo and only with colcon builder.
 
 Introduction
 ============
@@ -156,3 +161,5 @@ There might not an easy way to precisely count how many repositories out there a
   .. figure:: http://ros-industrial.github.io/industrial_ci/images/industrial_ci_traffic_20170120.png
 
 EoF
+.. image:: https://travis-ci.com/kroshu/industrial_ci.svg?branch=master
+    :target: https://travis-ci.com/kroshu/industrial_ci
