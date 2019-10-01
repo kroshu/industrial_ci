@@ -30,6 +30,7 @@ function install_catkin_lint {
 function run_source_tests {
     # shellcheck disable=SC1090
     source "${ICI_SRC_PATH}/builders/$BUILDER.sh" || ici_error "Builder '$BUILDER' not supported"
+    source "${ICI_SRC_PATH}/sonarqube.sh"
 
     ici_require_run_in_docker # this script must be run in docker
     upstream_ws=~/upstream_ws
@@ -39,6 +40,10 @@ function run_source_tests {
     if [ "$CCACHE_DIR" ]; then
         ici_run "setup_ccache" ici_asroot apt-get install -qq -y ccache
         export PATH="/usr/lib/ccache:$PATH"
+    fi
+    
+    if [ -n "$SONARQUBE" ]; then
+    	ici_run "sonarqube_setup" sonarqube_setup
     fi
 
     ici_run "${BUILDER}_setup" ici_quiet builder_setup
@@ -52,10 +57,17 @@ function run_source_tests {
         extend="$upstream_ws/install"
     fi
 
-    ici_with_ws "$target_ws" ici_build_workspace "target" "$extend" "$target_ws"
+	ici_with_ws "$target_ws" ici_build_workspace "target" "$extend" "$target_ws"
 
     if [ "$NOT_TEST_BUILD" != "true" ]; then
         ici_with_ws "$target_ws" ici_test_workspace "target" "$extend" "$target_ws"
+    fi
+    
+    if [ -n "$SONARQUBE" ]; then
+		if [ -n "$TEST_COVERAGE" ]; then
+			ici_with_ws "$target_ws" ici_run "generating_coverage_reports" sonarqube_generate_coverage_report "$extend" "$target_ws"
+		fi
+    	ici_with_ws "$target_ws" ici_run "analyzing_target_ws" sonarqube_analyze "target"
     fi
 
     if [ "$CATKIN_LINT" == "true" ] || [ "$CATKIN_LINT" == "pedantic" ]; then
