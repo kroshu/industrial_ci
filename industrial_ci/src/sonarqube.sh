@@ -43,7 +43,7 @@ function sonarqube_setup {
 
 function sonarqube_modify_builders {
     echo "Builders modified"
-	function colcon {
+	colcon() {
 		echo "Using modified colcon"
 		sonar-build-wrapper --out-dir /root/sonar/bw_output colcon "$@"
 	}
