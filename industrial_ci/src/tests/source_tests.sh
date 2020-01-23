@@ -130,7 +130,13 @@ function run_source_tests {
     if [ "${CLANG_TIDY:-false}" != false ]; then
         TARGET_CMAKE_ARGS="$TARGET_CMAKE_ARGS -DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
     fi
-    ici_with_ws "$target_ws" ici_build_workspace "target" "$extend" "$target_ws"
+    
+    if [ -n "$SONARQUBE" ]; then
+    	(
+    		sonarqube_modify_builders
+        	ici_with_ws "$target_ws" ici_build_workspace "target" "$extend" "$target_ws"
+        )
+   	fi
 
     if [ "$NOT_TEST_BUILD" != "true" ]; then
         ici_with_ws "$target_ws" ici_test_workspace "target" "$extend" "$target_ws"

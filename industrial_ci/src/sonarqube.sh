@@ -41,6 +41,13 @@ function sonarqube_setup {
     fi
 }
 
+function sonarqube_modify_builders {
+	function colcon {
+		sonar-build-wrapper --out-dir /root/sonar/bw_output colcon "$@"
+	}
+
+}
+
 function sonarqube_generate_coverage_report {
 	if [ -n "$BUILD_WRAPPER" ]; then
 		local BUILD_WRAPPER_TMP="$BUILD_WRAPPER"
