@@ -11,7 +11,7 @@ Introduction
 
 This repository contains `CI (Continuous Integration) <https://en.wikipedia.org/wiki/Continuous_integration>`__ configuration that can be commonly used by the repositories in `ros-industrial <https://github.com/ros-industrial>`__ organization. Non ros-industrial repositories in other organizations can utilize the CI config here too, as long as they are ROS-powered.
 
-As of November 2017, this repo provides scripts for `Travis CI` and `Gitlab CI`. The CI scripts in this repository are intended to be obtained by `git clone` feature. In client repos you can define custom, repository-specific checks, in addition to the generic configs stored in this repo.
+As of November 2019, this repo provides scripts for `Bitbucket CI`, `Gitlab CI`, `GitHub Actions` and `Travis CI`. The CI scripts in this repository are intended to be obtained by `git clone` feature. In client repos you can define custom, repository-specific checks, in addition to the generic configs stored in this repo.
 
 For a brief introduction, you could also check a presentation:
 
@@ -32,8 +32,9 @@ Following `ROS distributions <http://wiki.ros.org/Distributions>`__ / `ROS2 <htt
 * `Melodic <http://wiki.ros.org/melodic>`__
 * `Ardent <https://index.ros.org/doc/ros2/Releases/Release-Ardent-Apalone/>`__ *(EOL)*
 * `Bouncy <https://index.ros.org/doc/ros2/Releases/Bouncy/>`__ *(EOL)*
-* `Crystal <https://index.ros.org/doc/ros2/Releases/Release-Crystal-Clemmys/>`__
+* `Crystal <https://index.ros.org/doc/ros2/Releases/Release-Crystal-Clemmys/>`__ *(EOL)*
 * `Dashing <https://index.ros.org/doc/ros2/Releases/Release-Dashing-Diademata/>`__
+* `Eloquent <https://index.ros.org/doc/ros2/Releases/Release-Eloquent-Elusor/>`__
 
 Supported CIs
 +++++++++++++
@@ -178,6 +179,9 @@ Note that some of these currently tied only to a single option, but we still lea
 * **CCACHE_DIR** (default: not set): If set, `ccache <https://en.wikipedia.org/wiki/Ccache>`__ gets enabled for your build to speed up the subsequent builds in the same job if anything. See `detail. <https://github.com/ros-industrial/industrial_ci/blob/master/doc/index.rst#cache-build-artifacts-to-speed-up-the-subsequent-builds-if-any>`__
 * **CLANG_FORMAT_CHECK** (default: not set. Value range: ``[<format-style>|file]``): If set, run the `clang-format <https://clang.llvm.org/docs/ClangFormat.html>`__ check. Set the argument to ``file`` if the style configuration should be loaded from a ``.clang-format`` file, located in one of the parent directories of the source file.
 * **CLANG_FORMAT_VERSION** (default: not set): Version of clang-format to install and use (relates to both the apt package name as well as the executable), e.g., ``CLANG_FORMAT_VERSION=3.8``.
+* **CLANG_TIDY** (default: not set. Value range: [true|pedantic]): If set, run `clang.tidy <https://clang.llvm.org/extra/clang-tidy/>`__ to check the code in all packages and fail in case of errors. If `pedantic`, warnings will be treated as errors as well.
+* **CLANG_TIDY_ARGS** (default: not set): Pass additional arguments to ``clang-tidy``, e.g. ``CLANG_TIDY_ARGS='-checks=modernize-*'``
+* **CLANG_TIDY_JOBS** (default: number of processors): Maximum number of parallel jobs that execute ``clang-tidy``. The parallel processing is restricted to per build space (=one ROS package, except for ``BUILDER=catkin_make``)
 * **DEBUG_BASH** (default: not set): If set with any value (e.g. `true`), all executed commands that are not printed by default to reduce print space will be printed.
 * **DOCKER_BASE_IMAGE** (default: $OS_NAME:$OS_CODE_NAME): Base image used for building the CI image. Could be used to pre-bundle dependecies or to run tests for different architectures. See `this PR <https://github.com/ros-industrial/industrial_ci/pull/174>`__ for more info.
 * **DOCKER_BUILD_OPTS** (default: not set): Used do specify additional build options for Docker.
@@ -190,12 +194,12 @@ Note that some of these currently tied only to a single option, but we still lea
 * **DOWNSTREAM_CMAKE_ARGS** (default: not set): Addtional CMake arguments for downstream `workspace <#workspace-management>`__.
 * **DOWNSTREAM_WORKSPACE** (default: not set): Definition of downstream `workspace <#workspace-management>`__.
 * **EXPECT_EXIT_CODE** (default: 0): exit code must match this value for test to succeed
-* **INJECT_QEMU** (default: not set): Inject static qemu emulator for cross-platform builds, e.g. `INJECT_QEMU=arm`. This requires to install `qemu-user-static` on the host. The emulated build might take much longer!
 * **IMMEDIATE_TEST_OUTPUT** (default: not set): If true, test output is printed immediately during the tests
 * **NOT_TEST_BUILD** (default: not set): If true, tests in `build` space won't be run.
 * **NOT_TEST_DOWNSTREAM** (default: not set): If true, tests in the downstream workspace won't be run.
 * **OS_CODE_NAME** (default: derived from ROS_DISTRO): See `this section for the detail <https://github.com/ros-industrial/industrial_ci/blob/master/doc/index.rst#optional-type-of-os-and-distribution>`__.
 * **OS_NAME** (default: ubuntu): Possible options: {`ubuntu`, `debian`}. See `this section for the detail <https://github.com/ros-industrial/industrial_ci/blob/master/doc/index.rst#optional-type-of-os-and-distribution>`__.
+* **PARALLEL_TESTS** (default: not set): If `true`, build tool (e.g. Catkin) executes `run_tests` jobs in parallel, instead of only one job at a time.
 * **PRERELEASE** (default: false): If `true`, run `Prerelease Test on docker that emulates ROS buildfarm <http://wiki.ros.org/bloom/Tutorials/PrereleaseTest/>`__. The usage of Prerelease Test feature is `explained more in this section <https://github.com/ros-industrial/industrial_ci/blob/master/doc/index.rst#run-ros-prerelease-test>`__.
 * **PRERELEASE_DOWNSTREAM_DEPTH** (0 to 4, default: 0): Number of the levels of the package dependecies the Prerelease Test targets at. Range of the level is defined by ROS buildfarm (`<http://prerelease.ros.org>`__). NOTE: a job can run exponentially longer for the values greater than `0` depending on how many packages depend on your package (and remember a job on Travis CI can only run for up to 50 minutes).
 * **PRERELEASE_REPONAME** (default: TARGET_REPO_NAME): The  name of the target of Prerelease Test in rosdistro (that you select at `<http://prerelease.ros.org>`__). You can specify this if your repository name differs from the corresponding rosdisto entry. See `here <https://github.com/ros-industrial/industrial_ci/pull/145/files#r108062114>`__ for more usage.

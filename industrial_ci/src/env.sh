@@ -18,6 +18,7 @@
 
 ici_enforce_deprecated BEFORE_SCRIPT "Please migrate to new hook system."
 ici_enforce_deprecated CATKIN_CONFIG "Explicit catkin configuration is not available anymore."
+ici_enforce_deprecated INJECT_QEMU "Please check https://github.com/ros-industrial/industrial_ci/blob/master/doc/migration_guide.md#inject_qemu"
 
 if [ -n "$NOT_TEST_INSTALL" ]; then
     if [ "$NOT_TEST_INSTALL" != true ]; then
@@ -64,12 +65,14 @@ function  ros1_defaults {
     ROS1_DISTRO=${ROS1_DISTRO:-$ROS_DISTRO}
     BUILDER=${BUILDER:-catkin_tools}
     ROS_VERSION=1
+    ROS_PYTHON_VERSION=${ROS_PYTHON_VERSION:-2}
 }
 function  ros2_defaults {
     DEFAULT_OS_CODE_NAME=$1
     ROS2_DISTRO=${ROS2_DISTRO:-$ROS_DISTRO}
     BUILDER=${BUILDER:-colcon}
     ROS_VERSION=2
+    ROS_PYTHON_VERSION=3
 }
 function use_snapshot() {
     ROS_REPOSITORY_PATH="http://snapshots.ros.org/${ROS_DISTRO}/$1/ubuntu"
@@ -111,12 +114,19 @@ function set_ros_variables {
         DEFAULT_DOCKER_IMAGE=
         ROS_VERSION_EOL=true
         ;;
-    "bouncy")
+    "bouncy"|"crystal")
         ros2_defaults "bionic"
         ROS_VERSION_EOL=true
         ;;
-    "crystal"|"dashing")
+    "dashing")
         ros2_defaults "bionic"
+        ;;
+    "eloquent")
+        ros2_defaults "bionic"
+        ;;
+    "foxy")
+        ros2_defaults "bionic"
+        DOCKER_IMAGE=${DOCKER_IMAGE:-osrf/ros2:nightly}
         ;;
     esac
 
@@ -170,6 +180,7 @@ export DOCKER_BASE_IMAGE
 export ROS_DISTRO
 export ROS_VERSION
 export ROS_VERSION_EOL
+export ROS_PYTHON_VERSION
 
 # exit with error if OS_NAME is set, but OS_CODE_NAME is not.
 # assume ubuntu as default
@@ -217,6 +228,13 @@ fi
 
 
 export TERM=${TERM:-dumb}
+
+if [ "$ROS_PYTHON_VERSION" = 2 ]; then
+  export PYTHON_VERSION_NAME=python
+else
+  export PYTHON_VERSION_NAME=python3
+fi
+
 
 # legacy support for UPSTREAM_WORKSPACE and USE_DEB
 if [ "$UPSTREAM_WORKSPACE" = "debian" ]; then

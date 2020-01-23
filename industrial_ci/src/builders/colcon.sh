@@ -19,7 +19,7 @@ _colcon_event_handlers=(desktop_notification- status- terminal_title-)
 
 function builder_setup {
     ici_install_pkgs_for_command colcon python3-colcon-common-extensions
-    if [ "$ROS_DISTRO" = "kinetic" ]; then
+    if [ "$ROS_DISTRO" = "kinetic" ] || [ "$ROS_DISTRO" = "ardent" ]; then
         ici_install_pkgs_for_command pip3 python3-pip
         ici_asroot pip3 install -U setuptools
     fi
@@ -46,7 +46,13 @@ function builder_run_tests {
     else
         output_handler="console_cohesion+"
     fi
-    ici_exec_in_workspace "$extend" "$ws" colcon test --event-handlers "${_colcon_event_handlers[@]}" "${output_handler}"
+    local opts=(--event-handlers "${_colcon_event_handlers[@]}" "${output_handler}")
+    if [ "$PARALLEL_TESTS" == false ]; then
+        opts+=(--executor sequential  --ctest-args -j1)
+    else
+        opts+=(--executor parallel)
+    fi
+    ici_exec_in_workspace "$extend" "$ws" colcon test  "${opts[@]}"
 }
 
 function builder_test_results {

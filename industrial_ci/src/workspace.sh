@@ -72,22 +72,33 @@ function ici_install_pkgs_for_command {
   ici_exec_for_command "$command" ici_asroot apt-get -qq install --no-install-recommends -y "$@"
 }
 
+function ici_setup_git_client {
+  ici_install_pkgs_for_command git git-core
+  if [ -d ~/.ssh ]; then
+    ici_install_pkgs_for_command ssh ssh-client
+  fi
+}
+
+function ici_vcs_import {
+    vcs import --recursive "$@"
+}
+
 function ici_import_repository {
     local sourcespace=$1; shift
     local url=$1; shift
 
-    ici_install_pkgs_for_command vcs python-vcstool
+    ici_install_pkgs_for_command vcs "${PYTHON_VERSION_NAME}-vcstool"
 
     IFS=" " read -r -a parts <<< "$(ici_resolve_scheme "$url")" # name, type, url, version
 
     case "${parts[1]}" in
         git)
-          ici_install_pkgs_for_command git git-core
+          ici_setup_git_client
             ;;
         *)
             ;;
     esac
-    vcs import "$sourcespace" <<< "{repositories: {'${parts[0]}': {type: '${parts[1]}', url: '${parts[2]}', version: '${parts[3]}'}}}"
+    ici_vcs_import "$sourcespace" <<< "{repositories: {'${parts[0]}': {type: '${parts[1]}', url: '${parts[2]}', version: '${parts[3]}'}}}"
 }
 
 function ici_import_file {
@@ -100,9 +111,9 @@ function ici_import_file {
         bsdtar -o -C "$sourcespace" -xf "$file"
         ;;
     *)
-        ici_install_pkgs_for_command vcs python-vcstool
-        ici_install_pkgs_for_command git git-core
-        vcs import "$sourcespace" < "$file"
+        ici_install_pkgs_for_command vcs "${PYTHON_VERSION_NAME}-vcstool"
+        ici_setup_git_client
+        ici_vcs_import "$sourcespace" < "$file"
     ;;
     esac
 
@@ -121,9 +132,9 @@ function ici_import_url {
         processor=(bsdtar -o -C "$sourcespace" -xf-)
         ;;
     *)
-        ici_install_pkgs_for_command vcs python-vcstool
-        ici_install_pkgs_for_command git git-core
-        processor=(vcs import "$sourcespace")
+        ici_install_pkgs_for_command vcs "${PYTHON_VERSION_NAME}-vcstool"
+        ici_setup_git_client
+        processor=(ici_vcs_import "$sourcespace")
     ;;
     esac
 
@@ -198,7 +209,8 @@ function ici_prepare_sourcespace {
 }
 
 function ici_setup_rosdep {
-    ici_install_pkgs_for_command rosdep python-rosdep
+    ici_install_pkgs_for_command rosdep "${PYTHON_VERSION_NAME}-rosdep"
+    ici_install_pkgs_for_command "pip${ROS_PYTHON_VERSION}" "${PYTHON_VERSION_NAME}-pip"
     # Setup rosdep
     rosdep --version
     if ! [ -d /etc/ros/rosdep/sources.list.d ]; then
@@ -216,22 +228,18 @@ function ici_setup_rosdep {
 function ici_exec_in_workspace {
     local extend=$1; shift
     local path=$1; shift
-    # shellcheck disable=SC1090
-    ( { [ ! -e "$extend/setup.bash" ] || source "$extend/setup.bash"; } && cd "$path" && exec "$@")
+    ( { [ ! -e "$extend/setup.bash" ] || ici_source_setup "$extend"; } && cd "$path" && exec "$@")
 }
 
 function ici_install_dependencies {
     local extend=$1; shift
     local skip_keys=$1; shift
-    local cmake_prefix_path
-    cmake_prefix_path="$(ici_exec_in_workspace "$extend" . env | grep -oP '^CMAKE_PREFIX_PATH=\K.*')" || true
-
     rosdep_opts=(-q --from-paths "$@" --ignore-src -y)
     if [ -n "$skip_keys" ]; then
       rosdep_opts+=(--skip-keys "$skip_keys")
     fi
     set -o pipefail # fail if rosdep install fails
-    ROS_PACKAGE_PATH=$cmake_prefix_path ici_exec_in_workspace "$extend" "." rosdep install "${rosdep_opts[@]}" | { grep "executing command" || true; }
+    ici_exec_in_workspace "$extend" "." rosdep install "${rosdep_opts[@]}" | { grep "executing command" || true; }
     set +o pipefail
 }
 
