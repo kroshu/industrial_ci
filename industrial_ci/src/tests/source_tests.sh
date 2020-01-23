@@ -131,6 +131,7 @@ function run_source_tests {
         TARGET_CMAKE_ARGS="$TARGET_CMAKE_ARGS -DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
     fi
     
+    echo "echo test"
     if [ -n "$SONARQUBE" ]; then
     	(
     		sonarqube_modify_builders
