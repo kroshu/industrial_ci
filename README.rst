@@ -183,5 +183,3 @@ There might not an easy way to precisely count how many repositories out there a
   .. figure:: http://ros-industrial.github.io/industrial_ci/images/industrial_ci_traffic_20170120.png
 
 EoF
-.. image:: https://travis-ci.com/kroshu/industrial_ci.svg?branch=master
-    :target: https://travis-ci.com/kroshu/industrial_ci
