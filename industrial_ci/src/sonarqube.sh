@@ -41,13 +41,13 @@ function sonarqube_setup {
     fi
 }
 
-function sonarqube_modify_builders {
-    echo "Builders modified"
-	colcon() {
-		echo "Using modified colcon"
-		sonar-build-wrapper --out-dir /root/sonar/bw_output colcon "$@"
-	}
-}
+#function sonarqube_modify_builders {
+#    echo "Builders modified"
+#	colcon() {
+#		echo "Using modified colcon"
+#		sonar-build-wrapper --out-dir /root/sonar/bw_output colcon "$@"
+#	}
+#}
 
 function sonarqube_generate_coverage_report {
 	if [ -n "$BUILD_WRAPPER" ]; then
