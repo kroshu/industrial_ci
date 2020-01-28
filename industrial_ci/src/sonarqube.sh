@@ -71,8 +71,8 @@ function sonarqube_analyze {
 		local IFS=';'
 		local tmp_arr package_name package_source_dir
 	    read -ra tmp <<< ${package_data}
-	    package_name=${tmp[0]}
-	    package_source_dir=${tmp[1]}
+	    package_name=${tmp_arr[0]}
+	    package_source_dir=${tmp_arr[1]}
 	    echo "$package_name $package_source_dir"
 		sonar-scanner -Dsonar.projectBaseDir="${package_source_dir}" \
 	    			  -Dsonar.working.directory="/root/sonar/working_directory" \
