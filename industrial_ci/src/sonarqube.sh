@@ -69,6 +69,7 @@ function sonarqube_analyze {
 	echo "$(cat ${SONARQUBE_PACKAGES_FILE})"
 	while read -rd package_data
 	do
+		echo "${package_data}"
 		local IFS=';'
 		local tmp_arr package_name package_source_dir
 	    read -ra tmp_arr <<< "${package_data}"
