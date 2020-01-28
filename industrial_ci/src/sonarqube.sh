@@ -66,12 +66,13 @@ function sonarqube_generate_coverage_report {
 function sonarqube_analyze {
 	local ws=$1; shift
 	echo "$(cat ${SONARQUBE_PACKAGES_FILE})"
-	while read package_data; do
+	while read -r package_data; do
 		local IFS=';'
 		local tmp_arr package_name package_source_dir
 	    read -ra tmp <<< ${package_data}
-	    package_name=tmp[0]
-	    package_source_dir=tmp[1]
+	    package_name=${tmp[0]}
+	    package_source_dir=${tmp[1]}
+	    echo "$package_name $package_source_dir"
 		sonar-scanner -Dsonar.projectBaseDir="${package_source_dir}" \
 	    			  -Dsonar.working.directory="/root/sonar/working_directory" \
 	    			  -Dsonar.cfamily.build-wrapper-output="/root/sonar/bw_output" \
