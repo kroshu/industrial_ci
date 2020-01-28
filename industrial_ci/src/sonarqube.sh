@@ -35,10 +35,15 @@ function sonarqube_setup {
     wget -P /usr/lib/cmake/CodeCoverage "https://raw.githubusercontent.com/kroshu/kroshu-tools/master/cmake/CodeCoverage.cmake" 
     
     ici_asroot apt-get install -y default-jre
+    
     export BUILD_WRAPPER="sonar-build-wrapper --out-dir /root/sonar/bw_output"
+    export SONARQUBE_PACKAGES_FILE="/root/sonar/packages"
+    export TEST_COVERAGE_PACKAGES_FILE="/root/sonar/coverage_pacakges"
+    export TARGET_CMAKE_ARGS="${TARGET_CMAKE_ARGS} -SONARQUBE_SOURCE_DIRS_FILE=${SONARQUBE_SOURCE_DIRS_FILE}"
     if [ -n "$TEST_COVERAGE" ]; then
-    	export TARGET_CMAKE_ARGS="${TARGET_CMAKE_ARGS} -DTEST_COVERAGE=on"
+    	export TARGET_CMAKE_ARGS="${TARGET_CMAKE_ARGS} -DTEST_COVERAGE=on -SONARQUBE_PACKAGES_FILE=${SONARQUBE_PACKAGES_FILE}"
     fi
+
 }
 
 #function sonarqube_modify_builders {
@@ -50,16 +55,23 @@ function sonarqube_setup {
 #}
 
 function sonarqube_generate_coverage_report {
-	if [ -n "$BUILD_WRAPPER" ]; then
-		builder_run_build "$@" --cmake-target coverage --packages-select examples_rclcpp_minimal_subscriber
-	fi
+	local packages=$(cat ${TEST_COVERAGE_TARGETS_FILE})
+	builder_run_build "$@" --cmake-target coverage --packages-select ${packages}
+
 }
 
 function sonarqube_analyze {
 	local ws=$1; shift
-    sonar-scanner -Dsonar.projectBaseDir="${ws}/src/$TARGET_REPO_NAME" \
-    			  -Dsonar.working.directory="/root/sonar/working_directory" \
-    			  -Dsonar.cfamily.build-wrapper-output="/root/sonar/bw_output" \
-    			  -Dsonar.cfamily.gcov.reportsPath="${ws}/build/examples_rclcpp_minimal_subscriber/test_coverage" \
-    			  -Dsonar.cfamily.cache.enabled=false
+	while read package_data; do
+		local IFS=';'
+		local tmp_arr package_name package_source_dir
+	    read -ra tmp <<< ${package_data}
+	    package_name=tmp[0]
+	    package_source_dir=tmp[1]
+		sonar-scanner -Dsonar.projectBaseDir="${package_source_dir}" \
+	    			  -Dsonar.working.directory="/root/sonar/working_directory" \
+	    			  -Dsonar.cfamily.build-wrapper-output="/root/sonar/bw_output" \
+	    			  -Dsonar.cfamily.gcov.reportsPath="${ws}/build/${package_name}/test_coverage" \
+	    			  -Dsonar.cfamily.cache.enabled=false
+	done < ${SONARQUBE_PACKAGES_FILE}
 }
