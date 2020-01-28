@@ -44,6 +44,9 @@ function sonarqube_setup {
     	export TARGET_CMAKE_ARGS="${TARGET_CMAKE_ARGS} -DTEST_COVERAGE=on -DTEST_COVERAGE_PACKAGES_FILE=${TEST_COVERAGE_PACKAGES_FILE}"
     fi
 
+	touch ${SONARQUBE_PACKAGES_FILE}
+	touch ${TEST_COVERAGE_PACKAGES_FILE}
+	
 }
 
 #function sonarqube_modify_builders {
@@ -55,8 +58,7 @@ function sonarqube_setup {
 #}
 
 function sonarqube_generate_coverage_report {
-	echo ${TEST_COVERAGE_TARGETS_FILE}
-	local packages=$(cat "${TEST_COVERAGE_TARGETS_FILE}")
+	local packages=$(cat "${TEST_COVERAGE_PACKAGES_FILE}")
 	builder_run_build "$@" --cmake-target coverage --packages-select ${packages}
 
 }
