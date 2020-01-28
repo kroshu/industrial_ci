@@ -59,7 +59,7 @@ function sonarqube_setup {
 
 function sonarqube_generate_coverage_report {
 	local packages=$(cat "${TEST_COVERAGE_PACKAGES_FILE}")
-	builder_run_build "$@" --cmake-target coverage --packages-select ${packages} --cmake-clean-first
+	builder_run_build "$@" --cmake-target coverage --packages-select ${packages} --cmake-clean-cache
 
 }
 
