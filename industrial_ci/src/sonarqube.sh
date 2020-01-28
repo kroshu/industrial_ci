@@ -59,7 +59,7 @@ function sonarqube_setup {
 
 function sonarqube_generate_coverage_report {
 	local packages=$(cat "${TEST_COVERAGE_PACKAGES_FILE}")
-	builder_run_build "$@" --cmake-target coverage --packages-select ${packages}
+	builder_run_build "$@" --cmake-target coverage --packages-select ${packages} --cmake-clean-first
 
 }
 
@@ -78,6 +78,7 @@ function sonarqube_analyze {
 	    			  -Dsonar.working.directory="/root/sonar/working_directory" \
 	    			  -Dsonar.cfamily.build-wrapper-output="/root/sonar/bw_output" \
 	    			  -Dsonar.cfamily.gcov.reportsPath="${ws}/build/${package_name}/test_coverage" \
-	    			  -Dsonar.cfamily.cache.enabled=false
+	    			  -Dsonar.cfamily.cache.enabled=false \
+	    			  -X
 	done < "${SONARQUBE_PACKAGES_FILE}"
 }
