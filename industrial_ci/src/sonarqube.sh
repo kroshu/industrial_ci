@@ -60,9 +60,9 @@ function sonarqube_generate_coverage_report {
 
 function sonarqube_analyze {
 	local ws=$1; shift
-    sonar-scanner -Dsonar.projectBaseDir="${target_ws}/src/$TARGET_REPO_NAME" \
+    sonar-scanner -Dsonar.projectBaseDir="${ws}/src/$TARGET_REPO_NAME" \
     			  -Dsonar.working.directory="/root/sonar/working_directory" \
     			  -Dsonar.cfamily.build-wrapper-output="/root/sonar/bw_output" \
-    			  -Dsonar.cfamily.gcov.reportsPath="${current_ws}/build/examples_rclcpp_minimal_subscriber/test_coverage" \
+    			  -Dsonar.cfamily.gcov.reportsPath="${ws}/build/examples_rclcpp_minimal_subscriber/test_coverage" \
     			  -Dsonar.cfamily.cache.enabled=false
 }
