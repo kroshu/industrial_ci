@@ -65,7 +65,7 @@ function sonarqube_generate_coverage_report {
 
 function sonarqube_analyze {
 	local ws=$1; shift
-	cat "${SONARQUBE_PACKAGES_FILE}"
+	echo "(cat ${SONARQUBE_PACKAGES_FILE})"
 	while read package_data; do
 		local IFS=';'
 		local tmp_arr package_name package_source_dir
