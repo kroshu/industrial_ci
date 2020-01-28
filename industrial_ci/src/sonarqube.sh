@@ -40,9 +40,9 @@ function sonarqube_setup {
     export SONARQUBE_PACKAGES_FILE="/root/sonar/packages"
     export TEST_COVERAGE_PACKAGES_FILE="/root/sonar/coverage_pacakges"
     export TARGET_CMAKE_ARGS="${TARGET_CMAKE_ARGS} -DSONARQUBE_PACKAGES_FILE=${SONARQUBE_PACKAGES_FILE} --no-warn-unused-cli"
-    if [ -n "$TEST_COVERAGE" ]; then
-    	export TARGET_CMAKE_ARGS="${TARGET_CMAKE_ARGS} -DTEST_COVERAGE=on -DTEST_COVERAGE_PACKAGES_FILE=${TEST_COVERAGE_PACKAGES_FILE}"
-    fi
+    #if [ -n "$TEST_COVERAGE" ]; then
+    #	export TARGET_CMAKE_ARGS="${TARGET_CMAKE_ARGS} -DTEST_COVERAGE=on -DTEST_COVERAGE_PACKAGES_FILE=${TEST_COVERAGE_PACKAGES_FILE}"
+    #fi
 
 	touch ${SONARQUBE_PACKAGES_FILE}
 	touch ${TEST_COVERAGE_PACKAGES_FILE}
@@ -59,7 +59,8 @@ function sonarqube_setup {
 
 function sonarqube_generate_coverage_report {
 	local packages=$(cat "${TEST_COVERAGE_PACKAGES_FILE}")
-	builder_run_build "$@" --cmake-target coverage --packages-select ${packages} --cmake-clean-cache
+	builder_run_build "$@" --cmake-target coverage --packages-select ${packages} --cmake-clean-cache 
+		--cmake-args " -DTEST_COVERAGE=on -DTEST_COVERAGE_PACKAGES_FILE=${TEST_COVERAGE_PACKAGES_FILE}"
 
 }
 
