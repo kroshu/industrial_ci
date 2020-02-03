@@ -65,7 +65,7 @@ function sonarqube_generate_coverage_report {
 }
 
 function sonarqube_analyze {
-	local ws=$1; shift
+	local name=$1; shift
 	echo "$(cat ${SONARQUBE_PACKAGES_FILE})"
 	while IFS=';' read -r package_name package_source_dir
 	do
@@ -74,9 +74,8 @@ function sonarqube_analyze {
 			sonar-scanner -Dsonar.projectBaseDir="${package_source_dir}" \
 		    			  -Dsonar.working.directory="/root/sonar/working_directory" \
 		    			  -Dsonar.cfamily.build-wrapper-output="/root/sonar/bw_output" \
-		    			  -Dsonar.cfamily.gcov.reportsPath="${ws}/build/${package_name}/test_coverage" \
+		    			  -Dsonar.cfamily.gcov.reportsPath="${current_ws}/build/${package_name}/test_coverage" \
 		    			  -Dsonar.cfamily.cache.enabled=false \
-		    			  -X
 		fi
 	done < "${SONARQUBE_PACKAGES_FILE}"
 }
