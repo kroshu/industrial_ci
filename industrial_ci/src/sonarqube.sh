@@ -75,7 +75,7 @@ function sonarqube_analyze {
 		    			  -Dsonar.working.directory="/root/sonar/working_directory" \
 		    			  -Dsonar.cfamily.build-wrapper-output="/root/sonar/bw_output" \
 		    			  -Dsonar.cfamily.gcov.reportsPath="${current_ws}/build/${package_name}/test_coverage" \
-		    			  -Dsonar.cfamily.cache.enabled=false \
+		    			  -Dsonar.cfamily.cache.enabled=false
 		fi
 	done < "${SONARQUBE_PACKAGES_FILE}"
 }
