@@ -67,20 +67,16 @@ function sonarqube_generate_coverage_report {
 function sonarqube_analyze {
 	local ws=$1; shift
 	echo "$(cat ${SONARQUBE_PACKAGES_FILE})"
-	while read -rd package_data
+	while IFS=';' read -r package_name package_source_dir
 	do
-		echo "${package_data}"
-		local IFS=';'
-		local tmp_arr package_name package_source_dir
-	    read -ra tmp_arr <<< "${package_data}"
-	    package_name=${tmp_arr[0]}
-	    package_source_dir=${tmp_arr[1]}
-	    echo "$tmp_arr ${tmp_arr[*]} $package_name $package_source_dir"
-		sonar-scanner -Dsonar.projectBaseDir="${package_source_dir}" \
-	    			  -Dsonar.working.directory="/root/sonar/working_directory" \
-	    			  -Dsonar.cfamily.build-wrapper-output="/root/sonar/bw_output" \
-	    			  -Dsonar.cfamily.gcov.reportsPath="${ws}/build/${package_name}/test_coverage" \
-	    			  -Dsonar.cfamily.cache.enabled=false \
-	    			  -X
+		if [ -n $package_name ]; then
+		    echo "Package:$package_name, source: $package_source_dir"
+			sonar-scanner -Dsonar.projectBaseDir="${package_source_dir}" \
+		    			  -Dsonar.working.directory="/root/sonar/working_directory" \
+		    			  -Dsonar.cfamily.build-wrapper-output="/root/sonar/bw_output" \
+		    			  -Dsonar.cfamily.gcov.reportsPath="${ws}/build/${package_name}/test_coverage" \
+		    			  -Dsonar.cfamily.cache.enabled=false \
+		    			  -X
+		fi
 	done < "${SONARQUBE_PACKAGES_FILE}"
 }
