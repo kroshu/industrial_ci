@@ -59,9 +59,14 @@ function sonarqube_setup {
 
 function sonarqube_generate_coverage_report {
 	local packages=$(cat "${TEST_COVERAGE_PACKAGES_FILE}")
-	builder_run_build "$@" --cmake-target coverage --cmake-clean-cache \
-		--cmake-args "${CMAKE_ARGS} -DTEST_COVERAGE=on " --cmake-target-skip-unavailable
-
+	ici_parse_env_array  cmake_args CMAKE_ARGS
+	local args -a
+	args+=(--cmake-args "-DTEST_COVERAGE=ON")
+	if [ ${#cmake_args[@]} -gt 0 ]; then
+        args+="${cmake_args[@]}"
+    fi
+    args+=(--cmake-target coverage --cmake-target-skip-unavailable)
+	builder_run_build "$@" "${args[@]}"
 }
 
 function sonarqube_analyze {
