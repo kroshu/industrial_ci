@@ -60,7 +60,7 @@ function sonarqube_setup {
 function sonarqube_generate_coverage_report {
 	local packages=$(cat "${TEST_COVERAGE_PACKAGES_FILE}")
 	ici_parse_env_array  cmake_args CMAKE_ARGS
-	local args -a
+	local -a args
 	args+=(--cmake-args "-DTEST_COVERAGE=ON")
 	if [ ${#cmake_args[@]} -gt 0 ]; then
         args+="${cmake_args[@]}"
