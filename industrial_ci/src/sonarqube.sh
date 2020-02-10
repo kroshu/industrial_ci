@@ -64,7 +64,7 @@ function sonarqube_generate_coverage_report {
 	if [ ${#cmake_args[@]} -gt 0 ]; then
         args+=("${cmake_args[@]}")
     fi
-    args+=(--cmake-target coverage --cmake-target-skip-unavailable)
+    args+=(--cmake-target coverage --cmake-target-skip-unavailable --cmake-clean-cache)
 	builder_run_build "$@" "${args[@]}"
 }
 
