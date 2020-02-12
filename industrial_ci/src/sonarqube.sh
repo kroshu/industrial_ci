@@ -72,6 +72,8 @@ function sonarqube_analyze {
 	local name=$1; shift
 	local -a opt_pr_args
 	echo "${TRAVIS_PULL_REQUEST}"
+	echo "${TRAVIS_PULL_REQUEST_BRANCH}"
+	echo "${TRAVIS_BRANCH}"
 	if [ "${TRAVIS_PULL_REQUEST}" != "false" ]; then
 		opt_pr_args=(-Dsonar.pullrequest.key="${TRAVIS_PULL_REQUEST}"
 					 -Dsonar.pullrequest.branch="${TRAVIS_PULL_REQUEST_BRANCH}"
