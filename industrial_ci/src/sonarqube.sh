@@ -71,7 +71,7 @@ function sonarqube_generate_coverage_report {
 function sonarqube_analyze {
 	local name=$1; shift
 	local -a opt_pr_args
-	if [ ${TRAVIS_PULL_REQUEST} != "false" ]; then
+	if [ "${TRAVIS_PULL_REQUEST}" != "false" ]; then
 		opt_pr_args=("-Dsonar.pullrequest.key=${TRAVIS_PULL_REQUEST}"
 					 "-Dsonar.pullrequest.branch=${TRAVIS_PULL_REQUEST_BRANCH}"
 					 "-Dsonar.pullrequest.base=${TRAVIS_BRANCH}")
