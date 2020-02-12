@@ -73,9 +73,9 @@ function sonarqube_analyze {
 	local -a opt_pr_args
 	echo "${TRAVIS_PULL_REQUEST}"
 	if [ "${TRAVIS_PULL_REQUEST}" != "false" ]; then
-		opt_pr_args=("-Dsonar.pullrequest.key=${TRAVIS_PULL_REQUEST}"
-					 "-Dsonar.pullrequest.branch=${TRAVIS_PULL_REQUEST_BRANCH}"
-					 "-Dsonar.pullrequest.base=${TRAVIS_BRANCH}")
+		opt_pr_args=(-Dsonar.pullrequest.key="${TRAVIS_PULL_REQUEST}"
+					 -Dsonar.pullrequest.branch="${TRAVIS_PULL_REQUEST_BRANCH}"
+					 -Dsonar.pullrequest.base="${TRAVIS_BRANCH}")
 	fi
 	
 	while IFS=';' read -r package_name package_source_dir
