@@ -70,7 +70,13 @@ function sonarqube_generate_coverage_report {
 
 function sonarqube_analyze {
 	local name=$1; shift
-	echo "$(cat ${SONARQUBE_PACKAGES_FILE})"
+	local -a opt_pr_args
+	if [ ${TRAVIS_PULL_REQUEST} != "false" ]; then
+		opt_pr_args=("-Dsonar.pullrequest.key=${TRAVIS_PULL_REQUEST}"
+					 "-Dsonar.pullrequest.branch=${TRAVIS_PULL_REQUEST_BRANCH"}
+					 "-Dsonar.pullrequest.base=${TRAVIS_BRANCH}")
+	fi
+	
 	while IFS=';' read -r package_name package_source_dir
 	do
 		if [ -n $package_name ]; then
@@ -79,7 +85,8 @@ function sonarqube_analyze {
 		    			  -Dsonar.working.directory="/root/sonar/working_directory" \
 		    			  -Dsonar.cfamily.build-wrapper-output="/root/sonar/bw_output" \
 		    			  -Dsonar.cfamily.gcov.reportsPath="${current_ws}/build/${package_name}/test_coverage" \
-		    			  -Dsonar.cfamily.cache.enabled=false
+		    			  -Dsonar.cfamily.cache.enabled=false \
+		    			  ${opt_pr_args}
 		fi
 	done < "${SONARQUBE_PACKAGES_FILE}"
 }
