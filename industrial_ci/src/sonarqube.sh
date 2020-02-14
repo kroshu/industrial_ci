@@ -80,6 +80,8 @@ function sonarqube_analyze {
 					 -Dsonar.pullrequest.base="${TRAVIS_BRANCH}")
 	fi
 	
+	echo "$(cat /root/sonar/bw_output)"
+	
 	while IFS=';' read -r package_name package_source_dir
 	do
 		if [ -n $package_name ]; then
