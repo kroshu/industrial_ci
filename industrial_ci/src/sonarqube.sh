@@ -38,7 +38,7 @@ function sonarqube_setup {
     
     export BUILD_WRAPPER="sonar-build-wrapper --out-dir /root/sonar/bw_output"
     export SONARQUBE_PACKAGES_FILE="/root/sonar/packages"
-    export TEST_COVERAGE_PACKAGES_FILE="/root/sonar/coverage_pacakges"
+    # export TEST_COVERAGE_PACKAGES_FILE="/root/sonar/coverage_pacakges"
     export TARGET_CMAKE_ARGS="${TARGET_CMAKE_ARGS} -DSONARQUBE_PACKAGES_FILE=${SONARQUBE_PACKAGES_FILE} --no-warn-unused-cli"
     if [ -n "$TEST_COVERAGE" ]; then
     	export TARGET_CMAKE_ARGS="${TARGET_CMAKE_ARGS} -DTEST_COVERAGE=on "
@@ -80,7 +80,7 @@ function sonarqube_analyze {
 					 -Dsonar.pullrequest.base="${TRAVIS_BRANCH}")
 	fi
 	
-	echo "$(cat /root/sonar/bw_output/build-wrapper-dump.json)"
+	#echo "$(cat /root/sonar/bw_output/build-wrapper-dump.json)"
 	
 	while IFS=';' read -r package_name package_source_dir
 	do
