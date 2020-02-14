@@ -80,7 +80,7 @@ function sonarqube_analyze {
 					 -Dsonar.pullrequest.base="${TRAVIS_BRANCH}")
 	fi
 	
-	echo "$(cat /root/sonar/bw_output)"
+	echo "$(cat /root/sonar/bw_output/build-wrapper-dump.json)"
 	
 	while IFS=';' read -r package_name package_source_dir
 	do
