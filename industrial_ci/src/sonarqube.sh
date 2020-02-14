@@ -88,7 +88,7 @@ function sonarqube_analyze {
 		    echo "Package:$package_name, source: $package_source_dir"
 			sonar-scanner -Dsonar.projectBaseDir="${TARGET_REPO_PATH}" \
 		    			  -Dsonar.working.directory="/root/sonar/working_directory" \
-		    			  -Dsonar.cfamily.build-wrapper-output="/root/sonar/bw_output" \
+		    			  #-Dsonar.cfamily.build-wrapper-output="/root/sonar/bw_output" \
 		    			  -Dsonar.cfamily.gcov.reportsPath="${current_ws}/build/${package_name}/test_coverage" \
 		    			  -Dsonar.cfamily.cache.enabled=false \
 		    			  "${opt_pr_args[@]}"
