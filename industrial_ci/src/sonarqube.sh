@@ -45,7 +45,7 @@ function sonarqube_setup {
     fi
 
 	touch ${SONARQUBE_PACKAGES_FILE}
-	touch ${TEST_COVERAGE_PACKAGES_FILE}
+	# touch ${TEST_COVERAGE_PACKAGES_FILE}
 	
 }
 
