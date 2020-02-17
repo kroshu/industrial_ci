@@ -71,6 +71,7 @@ function sonarqube_generate_coverage_report {
 function sonarqube_analyze {
 	local name=$1; shift
 	local -a branch_args
+	local -a cov_report_paths
 
 	if [ "${TRAVIS_PULL_REQUEST}" == "false" ]; then
 		branch_args=(-Dsonar.branch.name="${TRAVIS_BRANCH}")
@@ -79,17 +80,17 @@ function sonarqube_analyze {
 					 -Dsonar.pullrequest.branch="${TRAVIS_PULL_REQUEST_BRANCH}"
 					 -Dsonar.pullrequest.base="${TRAVIS_BRANCH}")
 	fi
-		
-	while IFS=';' read -r package_name package_source_dir
+	
+	while read -r package
 	do
-		if [ -n $package_name ]; then
-		    echo "Package:$package_name, source: $package_source_dir"
-			sonar-scanner -Dsonar.projectBaseDir="/root/target_ws/src/${TARGET_REPO_NAME}" \
-		    			  -Dsonar.working.directory="/root/sonar/working_directory" \
-		    			  -Dsonar.cfamily.build-wrapper-output="/root/sonar/bw_output" \
-		    			  -Dsonar.cfamily.gcov.reportsPath="${current_ws}/build/${package_name}/test_coverage" \
-		    			  -Dsonar.cfamily.cache.enabled=false \
-		    			  "${branch_args[@]}"
-		fi
+		cov_report_paths+=(${current_ws}/build/${package}/test_coverage)
 	done < "${SONARQUBE_PACKAGES_FILE}"
+		
+	sonar-scanner -Dsonar.projectBaseDir="/root/target_ws/src/${TARGET_REPO_NAME}" \
+    			  -Dsonar.working.directory="/root/sonar/working_directory" \
+    			  -Dsonar.cfamily.build-wrapper-output="/root/sonar/bw_output" \
+    			  -Dsonar.cfamily.gcov.reportsPath="${cov_report_paths[@]}" \
+    			  -Dsonar.cfamily.cache.enabled=false \
+    			  "${branch_args[@]}"
+
 }
