@@ -70,18 +70,16 @@ function sonarqube_generate_coverage_report {
 
 function sonarqube_analyze {
 	local name=$1; shift
-	local -a opt_pr_args
-	echo "${TRAVIS_PULL_REQUEST}"
-	echo "${TRAVIS_PULL_REQUEST_BRANCH}"
-	echo "${TRAVIS_BRANCH}"
-	if [ "${TRAVIS_PULL_REQUEST}" != "false" ]; then
-		opt_pr_args=(-Dsonar.pullrequest.key="${TRAVIS_PULL_REQUEST}"
+	local -a branch_args
+
+	if [ "${TRAVIS_PULL_REQUEST}" == "false" ]; then
+		branch_args=(-Dsonar.branch.name="${TRAVIS_BRANCH}")
+	else
+		branch_args=(-Dsonar.pullrequest.key="${TRAVIS_PULL_REQUEST}"
 					 -Dsonar.pullrequest.branch="${TRAVIS_PULL_REQUEST_BRANCH}"
 					 -Dsonar.pullrequest.base="${TRAVIS_BRANCH}")
 	fi
-	
-	#echo "$(cat /root/sonar/bw_output/build-wrapper-dump.json)"
-	
+		
 	while IFS=';' read -r package_name package_source_dir
 	do
 		if [ -n $package_name ]; then
@@ -91,7 +89,7 @@ function sonarqube_analyze {
 		    			  -Dsonar.cfamily.build-wrapper-output="/root/sonar/bw_output" \
 		    			  -Dsonar.cfamily.gcov.reportsPath="${current_ws}/build/${package_name}/test_coverage" \
 		    			  -Dsonar.cfamily.cache.enabled=false \
-		    			  "${opt_pr_args[@]}"
+		    			  "${branch_args[@]}"
 		fi
 	done < "${SONARQUBE_PACKAGES_FILE}"
 }
