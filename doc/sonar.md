@@ -51,7 +51,7 @@ Furthermore, use the following commands in the install phase:
 install:
   - git config remote.origin.fetch +refs/heads/*:refs/remotes/origin/* # for correctly decorating pull requests
   - git fetch --unshallow --tags # for correct blame information
-  - git clone --quiet --depth 1 --branch devel https://github.com/kroshu/industrial_ci.git .industrial_ci # use the kroshu fork of industrial_ci
+  - git clone --quiet --depth 1 https://github.com/kroshu/industrial_ci.git .industrial_ci # use the kroshu fork of industrial_ci
   - curl "https://raw.githubusercontent.com/davetcoleman/roscpp_code_format/master/.clang-format" -o .clang-format # clang format for ROS
 ```
 
