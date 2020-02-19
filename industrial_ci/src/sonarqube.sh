@@ -78,7 +78,7 @@ function sonarqube_analyze {
 	mkdir ${cov_report_path}
 
 	if [ "${TRAVIS_PULL_REQUEST}" == "false" ]; then
-		branch_args=("-Dsonar.branch.name=\"${TRAVIS_BRANCH}\"")
+		branch_args=("-Dsonar.branch.name=${TRAVIS_BRANCH}")
 	else
 		branch_args=("-Dsonar.pullrequest.key=\"${TRAVIS_PULL_REQUEST}\""
 					 "-Dsonar.pullrequest.branch=\"${TRAVIS_PULL_REQUEST_BRANCH}\""
