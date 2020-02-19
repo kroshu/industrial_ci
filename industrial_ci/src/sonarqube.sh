@@ -36,7 +36,8 @@ function sonarqube_setup {
     
     ici_asroot apt-get install -y default-jre
     
-    export BUILD_WRAPPER="sonar-build-wrapper --out-dir /root/sonar/bw_output"
+    export BUILD_WRAPPER="sonar-build-wrapper"
+    export -a BUILD_WRAPPER_ARGS=("--out-dir" "/root/sonar/bw_output")
     export SONARQUBE_PACKAGES_FILE="/root/sonar/packages"
     # export TEST_COVERAGE_PACKAGES_FILE="/root/sonar/coverage_pacakges"
     export TARGET_CMAKE_ARGS="${TARGET_CMAKE_ARGS} -DSONARQUBE_PACKAGES_FILE=${SONARQUBE_PACKAGES_FILE} --no-warn-unused-cli"
@@ -58,38 +59,40 @@ function sonarqube_setup {
 #}
 
 function sonarqube_generate_coverage_report {
-	ici_parse_env_array cmake_args CMAKE_ARGS
-	local -a args
+	local -a args cmake_args
+	ci_parse_env_array cmake_args CMAKE_ARGS
+	
 	args=(--cmake-args " -DTEST_COVERAGE=ON")
 	if [ ${#cmake_args[@]} -gt 0 ]; then
         args+=("${cmake_args[@]}")
     fi
     args+=(--cmake-target coverage --cmake-target-skip-unavailable --cmake-clean-cache)
+    
 	builder_run_build "$@" "${args[@]}"
 }
 
 function sonarqube_analyze {
-	local name=$1; shift
+	local ws=$1; shift 
 	local -a branch_args
 	local cov_report_path="/root/sonar/coverage_reports"
 	mkdir ${cov_report_path}
 
 	if [ "${TRAVIS_PULL_REQUEST}" == "false" ]; then
-		branch_args=(-Dsonar.branch.name="${TRAVIS_BRANCH}")
+		branch_args=("-Dsonar.branch.name=\"${TRAVIS_BRANCH}\"")
 	else
-		branch_args=(-Dsonar.pullrequest.key="${TRAVIS_PULL_REQUEST}"
-					 -Dsonar.pullrequest.branch="${TRAVIS_PULL_REQUEST_BRANCH}"
-					 -Dsonar.pullrequest.base="${TRAVIS_BRANCH}")
+		branch_args=("-Dsonar.pullrequest.key=\"${TRAVIS_PULL_REQUEST}\""
+					 "-Dsonar.pullrequest.branch=\"${TRAVIS_PULL_REQUEST_BRANCH}\""
+					 "-Dsonar.pullrequest.base=\"${TRAVIS_BRANCH}\"")
 	fi
 	
 	while read -r package
 	do
-		if [ -d "${current_ws}/build/${package}/test_coverage" ]; then
-			cp -r "${current_ws}/build/${package}/test_coverage/" "${cov_report_path}/${package}"
+		if [ -d "${ws}/build/${package}/test_coverage" ]; then
+			cp -r "${ws}/build/${package}/test_coverage/" "${cov_report_path}/${package}"
 		fi
 	done < "${SONARQUBE_PACKAGES_FILE}"
 		
-	sonar-scanner -Dsonar.projectBaseDir="/root/target_ws/src/${TARGET_REPO_NAME}" \
+	sonar-scanner -Dsonar.projectBaseDir="${ws}/src/${TARGET_REPO_NAME}" \
     			  -Dsonar.working.directory="/root/sonar/working_directory" \
     			  -Dsonar.cfamily.build-wrapper-output="/root/sonar/bw_output" \
     			  -Dsonar.cfamily.gcov.reportsPath="${cov_report_path}" \
