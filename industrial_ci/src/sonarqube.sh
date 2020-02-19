@@ -37,7 +37,7 @@ function sonarqube_setup {
     ici_asroot apt-get install -y default-jre
     
     export BUILD_WRAPPER="sonar-build-wrapper"
-    export -a BUILD_WRAPPER_ARGS=("--out-dir" "/root/sonar/bw_output")
+    export BUILD_WRAPPER_ARGS="--out-dir /root/sonar/bw_output"
     export SONARQUBE_PACKAGES_FILE="/root/sonar/packages"
     # export TEST_COVERAGE_PACKAGES_FILE="/root/sonar/coverage_pacakges"
     export TARGET_CMAKE_ARGS="${TARGET_CMAKE_ARGS} -DSONARQUBE_PACKAGES_FILE=${SONARQUBE_PACKAGES_FILE} --no-warn-unused-cli"

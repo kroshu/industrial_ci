@@ -36,8 +36,10 @@ function builder_run_build_in_wrapper {
 	local build_wrapper_args=$1; shift
 	local extend=$1; shift
 	local ws=$1; shift
-	local IFS=' '
-    ici_exec_in_workspace "$extend" "$ws" "$build_wrapper" "${build_wrapper_args[@]}" colcon build --event-handlers "${_colcon_event_handlers[@]}" "$@"
+	
+	local -ra build_wrapper_args_arr <<< "$build_wrapper_args"
+	
+    ici_exec_in_workspace "$extend" "$ws" "$build_wrapper" "${build_wrapper_args_arr[@]}" colcon build --event-handlers "${_colcon_event_handlers[@]}" "$@"
 }
 
 function builder_run_tests {
