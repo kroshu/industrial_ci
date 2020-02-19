@@ -60,7 +60,7 @@ function sonarqube_setup {
 
 function sonarqube_generate_coverage_report {
 	local -a args cmake_args
-	ci_parse_env_array cmake_args CMAKE_ARGS
+	ici_parse_env_array cmake_args CMAKE_ARGS
 	
 	args=(--cmake-args " -DTEST_COVERAGE=ON")
 	if [ ${#cmake_args[@]} -gt 0 ]; then
