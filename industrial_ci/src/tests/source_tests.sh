@@ -100,6 +100,7 @@ function run_clang_tidy_check {
 function run_source_tests {
     # shellcheck disable=SC1090
     source "${ICI_SRC_PATH}/builders/$BUILDER.sh" || ici_error "Builder '$BUILDER' not supported"
+    # shellcheck disable=SC1090
     source "${ICI_SRC_PATH}/sonarqube.sh"
 
     ici_require_run_in_docker # this script must be run in docker
@@ -141,7 +142,7 @@ function run_source_tests {
 		if [ -n "$TEST_COVERAGE" ]; then
 			ici_with_ws "$target_ws" ici_run "generating_coverage_reports" sonarqube_generate_coverage_report "$extend" "$target_ws"
 		fi
-    	ici_with_ws "$target_ws" ici_run "analyzing_target_ws" sonarqube_analyze "target"
+    	ici_with_ws "$target_ws" ici_run "analyzing_target_ws" sonarqube_analyze "$target_ws"
     fi
 
     if [ "$CATKIN_LINT" == "true" ] || [ "$CATKIN_LINT" == "pedantic" ]; then

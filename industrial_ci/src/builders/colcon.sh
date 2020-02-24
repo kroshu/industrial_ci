@@ -29,16 +29,17 @@ function builder_run_build {
     local extend=$1; shift
     local ws=$1; shift
 	ici_exec_in_workspace "$extend" "$ws" colcon build --event-handlers "${_colcon_event_handlers[@]}" "$@"
-
 }
 
 function builder_run_build_in_wrapper {
+	local build_wrapper=$1; shift
+	local build_wrapper_args=$1; shift
 	local extend=$1; shift
-    local ws=$1; shift
-	local IFS=' '
-    read -ra build_wrapper <<< "$BUILD_WRAPPER"
-    ici_exec_in_workspace "$extend" "$ws" ${build_wrapper[@]} colcon build --event-handlers "${_colcon_event_handlers[@]}" "$@"
-
+	local ws=$1; shift
+	
+	read -ra build_wrapper_args_arr <<< "$build_wrapper_args"
+	
+    ici_exec_in_workspace "$extend" "$ws" "$build_wrapper" "${build_wrapper_args_arr[@]}" colcon build --event-handlers "${_colcon_event_handlers[@]}" "$@"
 }
 
 function builder_run_tests {
