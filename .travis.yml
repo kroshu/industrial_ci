@@ -11,6 +11,10 @@ language: generic
 git:
   quiet: true
 
+branches:
+  only:
+  - master
+
 env:
   global:
     - POST_PROCESS='echo "post processing reached"'
