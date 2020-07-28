@@ -19,6 +19,7 @@ function sonarqube_setup {
 	mkdir -p ~/sonar
 	
 	ici_install_pkgs_for_command wget wget
+	ici_install_pkgs_for_command ca-certificates ca-certificates
     wget -P ~/sonar/downloads https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip
     wget -P ~/sonar/downloads https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.0.0.1744-linux.zip
     
