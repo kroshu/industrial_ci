@@ -9,6 +9,7 @@ The new version comes with a number of improvements:
 * Added support for catkin_make, catkin_make_isolated and colcon
 * Use [vcstool](https://github.com/dirk-thomas/vcstool)(`vcs`) instead of `wstool` to support \*.rosinstall and \*.repos files
 * Added support for ROS2, and vcstool (rosinstall or repos files)
+* Available as GitHub Action
 * Separate upstream and downstream [workspaces](index.rst#workspace-management), even for prerelease tests
 * Fine-grained [hook system](index.rst#customize-within-the-ci-process) for customization
 * Writable target folder
@@ -21,7 +22,6 @@ Some features are not supported anymore:
 * Devel space builds
 * Testing installed \*.test files
 * Injecting QEMU (see [`INJECT_QEMU`](#inject_qemu))
-* Job control settings have been removed for now
 
 If you depend on these, you can still use the [legacy](https://github.com/ros-industrial/industrial_ci/tree/legacy) version.
 
@@ -84,8 +84,10 @@ The upstream workspace packages are now located in `~/upstream_ws`.
 
 ### Job control
 
-`industrial_ci` does not set defaults for the number of jobs anymore.
-In addition the job-control options got removed for the time being.
+`industrial_ci` does not set defaults for the number of build jobs anymore.
+`PARALLEL_BUILDS=N` can be used to enforce a limit.
+The number of parallel test is now limited to 1 per default to allow for reproducible tests.
+Specify `PARALLEL_TESTS=true` or  `PARALLEL_TESTS=N` to opt out.
 
 ### Hook system
 
@@ -168,15 +170,12 @@ Or even better: Add support for the install space.
 
 ### CATKIN_PARALLEL_JOBS
 
-This is not supported anymore (see [job control](#job-control)) as well.
-Just try your build without this setting.
-If it does not work, you should review the package dependencies in your repository.
+This is not supported anymore, use `PARALLEL_BUILDS` instead (see [job control](#job-control) as well).
 
 ### CATKIN_PARALLEL_TEST_JOBS
 
-This is not supported anymore (see [job control](#job-control)) as well.
-Just try your build without this setting.
-Please [open an issue](https://github.com/ros-industrial/industrial_ci/issues/new) if you really depend on this.
+This is not supported anymore. The number of parallel test jobs is limited to 1 per default.
+Specify `PARALLEL_TESTS=true` to remove this limit (see [job control](#job-control) as well).
 
 ### CMAKE_ARGS
 
@@ -228,19 +227,17 @@ If your rosinstall file contains your target repository as well, you might want 
 ### ROS_PARALLEL_JOBS
 
 This variable does not get processed by `industrial_ci` anymore, instead it just gets passed to the build tool.
-Just try your build without this setting.
-If it does not work, you should review the package dependencies in your repository.
+As an alternative, `PARALLEL_BUILDS` can be used (see [job control](#job-control) as well).
 
 ### ROS_PARALLEL_TEST_JOBS
 
-This is not supported anymore (see [job control](#job-control)) as well.
-Just try your build without this setting.
-Please [open an issue](https://github.com/ros-industrial/industrial_ci/issues/new) if you really depend on this.
+This is not supported anymore. The number of parallel test jobs is limited to 1 per default.
+Specify `PARALLEL_TESTS=true` to remove this limit (see [job control](#job-control) as well).
 
 ### ROS_REPOSITORY_PATH
 
 This variable is supported as-is.
-If it is set to `http://packages.ros.org/ros-shadow-fixed/ubuntu` or `http://packages.ros.org/ros-testing/ubuntu`,  it can be removed completely or replaced by `ROS_REPO=ros-testing` (default).
+If it is set to `http://packages.ros.org/ros-shadow-fixed/ubuntu` or `http://packages.ros.org/ros-testing/ubuntu`,  it can be removed completely or replaced by `ROS_REPO=testing` (default).
 If it is set to `http://packages.ros.org/ros/ubuntu`, it could get shortened to `ROS_REPO=ros` to make `industrial_ci` use the [official ROS Docker](https://hub.docker.com/_/ros) images, if possible.
 
 ### TARGET_PKGS
@@ -263,7 +260,7 @@ If your rosinstall file contains your target repository as well, you might want 
 ### USE_DEB
 
 `USE_DEB=true` is superfluous and can simply get removed.
-`USE_DEB=false` is the same as [`UPSTREAM_WORKSPACE=file`] and should [get migrated](#upstream_workspace).
+`USE_DEB=false` is the same as `UPSTREAM_WORKSPACE=file` and should [get migrated](#upstream_workspace).
 
 ### USE_MOCKUP
 

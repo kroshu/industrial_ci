@@ -32,7 +32,7 @@ function setup_ros_prerelease() {
         usermod -a -G host_docker ci
     fi
 
-    ici_quiet ici_asroot apt-get -qq install -y docker.io python3-pip python3-yaml sudo
+    ici_quiet ici_apt_install docker.io python3-pip python3-setuptools python3-wheel python3-yaml sudo git-core
     ici_asroot pip3 install git+https://github.com/ros-infrastructure/ros_buildfarm.git
 }
 
@@ -71,7 +71,7 @@ function run_ros_prerelease() {
     if [ -n "$CCACHE_DIR" ]; then
       opts+=(-v "$CCACHE_DIR:$WORKSPACE/home/.ccache")
     fi
-    DOCKER_RUN_OPTS="${opts[*]}" DOCKER_IMAGE=${DOCKER_IMAGE:-ros:$ROS_DISTRO-ros-core} ici_require_run_in_docker
+    DOCKER_RUN_OPTS="${opts[*]}" DOCKER_IMAGE=${DOCKER_DEFAULT_IMAGE:-ros:melodic-ros-core} ici_require_run_in_docker
 
     ici_run "setup_ros_prerelease" setup_ros_prerelease
 
@@ -90,7 +90,7 @@ function run_ros_prerelease() {
 
     ici_run "prepare_prerelease_workspaces" prepare_prerelease_workspaces "$WORKSPACE" "$reponame" "$(basename "$TARGET_REPO_PATH")"
     ici_run 'generate_prerelease_script' sudo -EH -u ci generate_prerelease_script.py "${ROSDISTRO_INDEX_URL}" "$ROS_DISTRO" default "$OS_NAME" "$OS_CODE_NAME" "${OS_ARCH:-amd64}" --level "$downstream_depth" --output-dir "$WORKSPACE" --custom-repo "$reponame::::"
-    ABORT_ON_TEST_FAILURE=1 ici_run "run_prerelease_script" sudo -EH -u ci sh -c ". '/opt/ros/$ROS_DISTRO/setup.sh' && cd '$WORKSPACE' && exec ./prerelease.sh -y"
+    ABORT_ON_TEST_FAILURE=1 ici_run "run_prerelease_script" sudo -EH -u ci sh -c ". /opt/ros/*/setup.sh && cd '$WORKSPACE' && exec ./prerelease.sh -y"
 
     echo 'ROS Prerelease Test went successful.'
 }

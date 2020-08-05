@@ -33,7 +33,7 @@ for v in BUILD_PKGS_WHITELIST PKGS_DOWNSTREAM TARGET_PKGS USE_MOCKUP; do
 done
 
 for v in CATKIN_PARALLEL_JOBS CATKIN_PARALLEL_TEST_JOBS ROS_PARALLEL_JOBS ROS_PARALLEL_TEST_JOBS; do
-    ici_mark_deprecated "$v" "Job control is not available anymore"
+    ici_mark_deprecated "$v" "Please migrate to PARALLEL_BUILDS and/or PARALLEL_TESTS"
 done
 
 ici_mark_deprecated ROSINSTALL_FILENAME "Please migrate to new UPSTREAM_WORKSPACE format"
@@ -109,6 +109,11 @@ function set_ros_variables {
     "melodic")
         ros1_defaults "bionic"
         ;;
+    "noetic")
+        BUILDER=${BUILDER:-colcon}
+        ros1_defaults "focal"
+        ROS_PYTHON_VERSION=3
+        ;;
     "ardent")
         ros2_defaults "xenial"
         DEFAULT_DOCKER_IMAGE=
@@ -125,8 +130,10 @@ function set_ros_variables {
         ros2_defaults "bionic"
         ;;
     "foxy")
-        ros2_defaults "bionic"
-        DOCKER_IMAGE=${DOCKER_IMAGE:-osrf/ros2:nightly}
+        ros2_defaults "focal"
+        ;;
+    "rolling")
+        ros2_defaults "focal"
         ;;
     esac
 
@@ -145,6 +152,12 @@ function set_ros_variables {
             use_repo_or_final_snapshot "http://packages.ros.org/$prefix/ubuntu"
             ;;
         "ros")
+            if [ "$ROS_VERSION" -eq 2 ]; then
+                ici_warn "ROS_REPO=ros would select the ROS1 repository, please use ROS_REPO=main"
+            fi
+            use_repo_or_final_snapshot "http://packages.ros.org/$prefix/ubuntu"
+            ;;
+        "ros1")
             use_repo_or_final_snapshot "http://packages.ros.org/ros/ubuntu"
             ;;
         "ros2")
@@ -155,6 +168,13 @@ function set_ros_variables {
             DEFAULT_DOCKER_IMAGE=""
             ;;
         "ros-shadow-fixed"|"ros-testing")
+            if [ "$ROS_VERSION" -eq 2 ]; then
+                ici_warn "ROS_REPO=$ROS_REPO would select the ROS1 repository, please use ROS_REPO=testing"
+            fi
+            use_repo_or_final_snapshot "http://packages.ros.org/$prefix-testing/ubuntu"
+            DEFAULT_DOCKER_IMAGE=""
+            ;;
+        "ros1-testing")
             use_repo_or_final_snapshot "http://packages.ros.org/ros-testing/ubuntu"
             DEFAULT_DOCKER_IMAGE=""
             ;;
@@ -181,6 +201,7 @@ export ROS_DISTRO
 export ROS_VERSION
 export ROS_VERSION_EOL
 export ROS_PYTHON_VERSION
+export DEFAULT_DOCKER_IMAGE
 
 # exit with error if OS_NAME is set, but OS_CODE_NAME is not.
 # assume ubuntu as default

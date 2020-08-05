@@ -50,13 +50,26 @@ function ici_resolve_scheme {
 
 }
 
+function ici_apt_install {
+    ici_asroot apt-get -qq install -y --no-upgrade --no-install-recommends "$@"
+}
+
 function ici_init_apt {
     ici_asroot apt-get update -qq
+
+    local debs_default=(build-essential)
+    if [ -n "$_DEFAULT_DEBS" ]; then
+        ici_parse_env_array debs_default _DEFAULT_DEBS
+    fi
+    if [ -n "${debs_default[*]}" ]; then
+        ici_apt_install "${debs_default[@]}"
+    fi
+
     # If more DEBs needed during preparation, define ADDITIONAL_DEBS variable where you list the name of DEB(S, delimitted by whitespace)
     local -a debs
     ici_parse_env_array debs ADDITIONAL_DEBS
     if [ -n "${debs[*]}" ]; then
-        ici_asroot apt-get install -qq -y "${debs[@]}" || ici_error "One or more additional deb installation is failed. Exiting."
+        ici_apt_install "${debs[@]}" || ici_error "One or more additional deb installation is failed. Exiting."
     fi
 }
 
@@ -69,7 +82,7 @@ function ici_exec_for_command {
 
 function ici_install_pkgs_for_command {
   local command=$1; shift
-  ici_exec_for_command "$command" ici_asroot apt-get -qq install --no-install-recommends -y "$@"
+  ici_exec_for_command "$command" ici_apt_install "$@"
 }
 
 function ici_setup_git_client {
@@ -80,14 +93,14 @@ function ici_setup_git_client {
 }
 
 function ici_vcs_import {
-    vcs import --recursive "$@"
+    vcs import --recursive --force "$@"
 }
 
 function ici_import_repository {
     local sourcespace=$1; shift
     local url=$1; shift
 
-    ici_install_pkgs_for_command vcs "${PYTHON_VERSION_NAME}-vcstool"
+    ici_install_pkgs_for_command vcs python3-vcstool
 
     IFS=" " read -r -a parts <<< "$(ici_resolve_scheme "$url")" # name, type, url, version
 
@@ -98,7 +111,11 @@ function ici_import_repository {
         *)
             ;;
     esac
-    ici_vcs_import "$sourcespace" <<< "{repositories: {'${parts[0]}': {type: '${parts[1]}', url: '${parts[2]}', version: '${parts[3]}'}}}"
+    if [ "${parts[3]}" = "HEAD" ]; then
+        ici_vcs_import "$sourcespace" <<< "{repositories: {'${parts[0]}': {type: '${parts[1]}', url: '${parts[2]}'}}}"
+    else
+        ici_vcs_import "$sourcespace" <<< "{repositories: {'${parts[0]}': {type: '${parts[1]}', url: '${parts[2]}', version: '${parts[3]}'}}}"
+    fi
 }
 
 function ici_import_file {
@@ -111,7 +128,7 @@ function ici_import_file {
         bsdtar -o -C "$sourcespace" -xf "$file"
         ;;
     *)
-        ici_install_pkgs_for_command vcs "${PYTHON_VERSION_NAME}-vcstool"
+        ici_install_pkgs_for_command vcs python3-vcstool
         ici_setup_git_client
         ici_vcs_import "$sourcespace" < "$file"
     ;;
@@ -132,7 +149,7 @@ function ici_import_url {
         processor=(bsdtar -o -C "$sourcespace" -xf-)
         ;;
     *)
-        ici_install_pkgs_for_command vcs "${PYTHON_VERSION_NAME}-vcstool"
+        ici_install_pkgs_for_command vcs python3-vcstool
         ici_setup_git_client
         processor=(ici_vcs_import "$sourcespace")
     ;;
@@ -211,13 +228,23 @@ function ici_prepare_sourcespace {
 function ici_setup_rosdep {
     ici_install_pkgs_for_command rosdep "${PYTHON_VERSION_NAME}-rosdep"
     ici_install_pkgs_for_command "pip${ROS_PYTHON_VERSION}" "${PYTHON_VERSION_NAME}-pip"
+
+    if [ "$ROS_DISTRO" = "indigo" ] || [ "$ROS_DISTRO" = "jade" ]; then
+        ici_quiet ici_apt_install "ros-$ROS_DISTRO-roslib"
+    else
+        ici_apt_install "ros-$ROS_DISTRO-ros-environment"
+    fi
+
     # Setup rosdep
     rosdep --version
     if ! [ -d /etc/ros/rosdep/sources.list.d ]; then
         ici_asroot rosdep init
     fi
 
-    update_opts=(--rosdistro "$ROS_DISTRO")
+    update_opts=()
+    if [ -z "$ROSDISTRO_INDEX_URL" ]; then
+        update_opts+=(--rosdistro "$ROS_DISTRO")
+    fi
     if [ "$ROS_VERSION_EOL" = true ]; then
         update_opts+=(--include-eol-distros)
     fi
@@ -234,12 +261,19 @@ function ici_exec_in_workspace {
 function ici_install_dependencies {
     local extend=$1; shift
     local skip_keys=$1; shift
+
+    local cmake_prefix_path
+    if [ "$ROS_VERSION" -eq 2 ]; then
+      # work-around for https://github.com/ros-infrastructure/rosdep/issues/724
+      cmake_prefix_path="$(ici_exec_in_workspace "$extend" . env | grep -oP '^CMAKE_PREFIX_PATH=\K.*'):" || true
+    fi
+
     rosdep_opts=(-q --from-paths "$@" --ignore-src -y)
     if [ -n "$skip_keys" ]; then
       rosdep_opts+=(--skip-keys "$skip_keys")
     fi
     set -o pipefail # fail if rosdep install fails
-    ici_exec_in_workspace "$extend" "." rosdep install "${rosdep_opts[@]}" | { grep "executing command" || true; }
+    ROS_PACKAGE_PATH="$cmake_prefix_path$ROS_PACKAGE_PATH" ici_exec_in_workspace "$extend" "." rosdep install "${rosdep_opts[@]}" | { grep "executing command" || true; }
     set +o pipefail
 }
 

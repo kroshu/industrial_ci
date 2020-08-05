@@ -35,7 +35,7 @@ Some notable feature:
 * Checks if your package builds, installs without issues. If unit/system tests are defined run them. `ROS Prerelease Test <http://wiki.ros.org/bloom/Tutorials/PrereleaseTest>`__ can optionally be run.
 * Proven to cover the general requirements of the ROS-based robotics repositories. Easily configurable.
 * Users can add custom pre/post processes.
-* Covers ROS1 Indigo, Jade, Kinetic, Lunar, Melodic and ROS2 distributions.
+* Covers ROS1 Indigo, Jade, Kinetic, Lunar, Melodic, Noetic and ROS2 distributions.
 * This repo provides scripts for `Bitbucket CI`, `Gitlab CI`, `GitHub Actions` and `Travis CI` only, but it can be easily adapted for other CI services.
 
 For a brief overall introduction, you could also check a presentation:
@@ -119,7 +119,7 @@ For Bitbucket Pipelines
 For GitHub Actions
 -----------------------
 
-1. Create `.github/workflows/main.yml` (main.yml is arbitrary)  with the following configuration, (this snippet can be the entire content of the file), replacing melodic for your chosen distro:
+1. Create `.github/workflows/industrial_ci_action.yml` (industrial_ci_action.yml is arbitrary, `complete template <doc/industrial_ci_action.yml>`__)  with the following configuration, (this snippet can be the entire content of the file), replacing melodic for your chosen distro:
 
 ::
 
