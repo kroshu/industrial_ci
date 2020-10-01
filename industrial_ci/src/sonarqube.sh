@@ -21,11 +21,11 @@ function sonarqube_setup {
 	ici_install_pkgs_for_command wget wget
 	ici_install_pkgs_for_command ca-certificates ca-certificates
     wget -P ~/sonar/downloads https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip
-    wget -P ~/sonar/downloads https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.0.0.1744-linux.zip
+    wget -P ~/sonar/downloads https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.4.0.2170.zip
     
     ici_install_pkgs_for_command unzip unzip
     unzip ~/sonar/downloads/build-wrapper-linux-x86.zip -d ~/sonar/tools
-    unzip ~/sonar/downloads/sonar-scanner-cli-4.0.0.1744-linux.zip -d ~/sonar/tools
+    unzip ~/sonar/downloads/sonar-scanner-cli-4.4.0.2170.zip -d ~/sonar/tools
     
     chmod +x ~/sonar/tools/build-wrapper-linux-x86/build-wrapper-linux-x86-64
     #chown root:root ~/sonar/build-wrapper-linux-x86/build-wrapper-linux-x86-64
