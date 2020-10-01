@@ -31,7 +31,7 @@ function sonarqube_setup {
     #chown root:root ~/sonar/build-wrapper-linux-x86/build-wrapper-linux-x86-64
     
     ln -s ~/sonar/tools/build-wrapper-linux-x86/build-wrapper-linux-x86-64 /usr/local/bin/sonar-build-wrapper
-    ln -s ~/sonar/tools/sonar-scanner-4.4.0.2170-linux/bin/sonar-scanner /usr/local/bin/sonar-scanner
+    ln -s ~/sonar/tools/sonar-scanner-4.4.0.2170/bin/sonar-scanner /usr/local/bin/sonar-scanner
     
     wget -P /usr/lib/cmake/CodeCoverage "https://raw.githubusercontent.com/kroshu/kroshu-tools/master/cmake/CodeCoverage.cmake" 
     
