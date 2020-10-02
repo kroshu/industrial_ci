@@ -81,7 +81,7 @@ function sonarqube_analyze {
 	if [ "${TRAVIS_PULL_REQUEST}" == "false" ]; then
 		branch_args=("-Dsonar.branch.name=${TRAVIS_BRANCH}")
 	else
-		branch_args=("-Dsonar.pullrequest.key=\"${TRAVIS_PULL_REQUEST}\""
+		branch_args=("-Dsonar.pullrequest.key=${TRAVIS_PULL_REQUEST}"
 					 "-Dsonar.pullrequest.branch=\"${TRAVIS_PULL_REQUEST_BRANCH}\""
 					 "-Dsonar.pullrequest.base=\"${TRAVIS_BRANCH}\"")
 	fi
