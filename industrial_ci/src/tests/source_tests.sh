@@ -101,6 +101,7 @@ function run_source_tests {
     # shellcheck disable=SC1090
     source "${ICI_SRC_PATH}/builders/$BUILDER.sh" || ici_error "Builder '$BUILDER' not supported"
     # shellcheck disable=SC1090
+    # shellcheck source=../sonarqube.sh
     source "${ICI_SRC_PATH}/sonarqube.sh"
 
     ici_require_run_in_docker # this script must be run in docker
