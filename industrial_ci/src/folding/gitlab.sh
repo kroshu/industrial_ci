@@ -19,7 +19,7 @@ function  ici_start_fold() {
     shift
     local name=$1; shift
     local start=$1; shift
-    ici_ansi_cleared_line "section_start:${start::-9}:$name"
+    ici_ansi_cleared_line "section_start:${start::-9}:${name}[collapsed=true]"
 }
 
 function  ici_end_fold() {
@@ -28,4 +28,8 @@ function  ici_end_fold() {
     shift
     local end=$1; shift
     ici_ansi_cleared_line "section_end:${end::-9}:$name"
+}
+
+function ici_report_result() {
+    true
 }

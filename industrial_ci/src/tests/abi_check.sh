@@ -18,7 +18,7 @@
 function _install_universal_ctags() {
     ici_apt_install autoconf automake pkg-config
     ici_import_repository /tmp github:universal-ctags/ctags.git#master
-    (cd /tmp/ctags && ./autogen.sh && ./configure && ici_asroot make install)
+    (ici_guard cd /tmp/ctags && ./autogen.sh && ./configure && ici_asroot make install) || ici_exit
     rm -rf /tmp/ctags
 }
 
@@ -26,7 +26,7 @@ function _import_and_make_install() {
   local repo=$1; shift
   ici_import_repository /tmp "github:$repo.git#master"
   local dir; dir=/tmp/$(basename "$repo")
-  (cd "$dir" && ici_asroot make install prefix=/usr)
+  (ici_guard cd "$dir" && ici_asroot make install prefix=/usr) || ici_exit
   rm -rf "$dir"
 }
 
@@ -83,14 +83,14 @@ function abi_process_workspace() {
   local cflags="-g -Og"
   local cmake_args=(--cmake-args "-DCMAKE_C_FLAGS=$cflags" "-DCMAKE_CXX_FLAGS=$cflags")
 
-  ici_run "install_${tag}_dependencies" ici_install_dependencies "$extend" "$ROSDEP_SKIP_KEYS" "$workspace/src"
-  ici_run "abi_build_${tag}" builder_run_build "$extend" "$workspace" "${cmake_args[@]}"
-  ici_run "abi_dump_${tag}" abi_dump_libraries  "$workspace/install" "$workspace/abi_dumps" -lver "$version"
+  ici_step "install_${tag}_dependencies" ici_install_dependencies "$extend" "$ROSDEP_SKIP_KEYS" "$workspace/src"
+  ici_step "abi_build_${tag}" builder_run_build "$extend" "$workspace" "${cmake_args[@]}"
+  ici_step "abi_dump_${tag}" abi_dump_libraries  "$(ici_extend_space "$workspace")" "$workspace/abi_dumps" -lver "$version"
 }
 
 function abi_configure() {
   if [ "$ABICHECK_MERGE" = true ]; then
-    ici_setup_git_client
+    ici_exec_for_command git ici_error "ABICHECK_MERGE=true needs git client"
     local ref_list
     if ici_split_array ref_list "$(cd "$TARGET_REPO_PATH" && git rev-list --parents -n 1 HEAD)" && [ "${#ref_list[@]}" -gt 2 ]; then
         ABICHECK_VERSION="${ref_list[1]}"
@@ -122,7 +122,7 @@ function abi_report() {
   local reports_dir=$1; shift
 
   abi_install_compliance_checker
-  ici_quiet ici_install_pkgs_for_command links links
+  ici_install_pkgs_for_command links links
 
   mkdir -p "$reports_dir"
 
@@ -144,7 +144,7 @@ function abi_report() {
               ici_warn "'$(basename "$l" .dump)': Invalid input ABI dump. Perhaps this library does not any export symbols."
               ici_time_end "${ANSI_YELLOW}"
           else
-              ici_exit "$ret"
+              return "$ret"
           fi
       fi
   done
@@ -154,57 +154,54 @@ function abi_report() {
   fi
 }
 
-function run_abi_check() {
-    export ABICHECK_VERSION
-    export ABICHECK_URL
-
+ function prepare_abi_check() {
     if [ "$ABICHECK_MERGE" = "auto" ]; then
-        ici_error "ABICHECK_MERGE auto mode is available for travis only. "
+        ici_error "ABICHECK_MERGE auto mode is available for travis and github only. "
     fi
     if [ -z "$ABICHECK_URL" ]; then
         ici_error "Please set ABICHECK_URL"
     fi
 
-    # shellcheck disable=SC1090
-    source "${ICI_SRC_PATH}/builders/$BUILDER.sh" || ici_error "Builder '$BUILDER' not supported"
+    ici_check_builder
 
     abi_configure # handle merge and detect version
+ }
 
-    ici_require_run_in_docker # this script must be run in docker
-
+function run_abi_check() {
     if [[ $ABICHECK_URL =~ ^[@#]([[:alnum:]_.-]+)$ ]]; then
         ABICHECK_URL="git+file://${TARGET_REPO_PATH}${ABICHECK_URL}"
     fi
 
-    base_ws="/abicheck/old/$ABICHECK_VERSION"
-    upstream_ws=~/upstream_ws
-    target_ws="/abicheck/target"
+    base_ws=$BASEDIR/${PREFIX}base_ws
+    upstream_ws=$BASEDIR/${PREFIX}upstream_ws
+    target_ws=$BASEDIR/${PREFIX}target_ws
 
-    ici_with_ws "$base_ws" ici_run "abi_get_base" ici_prepare_sourcespace "$base_ws/src" "$ABICHECK_URL"
+    ici_with_ws "$base_ws" ici_step "abi_get_base" ici_prepare_sourcespace "$base_ws/src" "$ABICHECK_URL"
 
-    ici_run "${BUILDER}_setup" ici_quiet builder_setup
-    ici_run "setup_rosdep" ici_setup_rosdep
+    ici_source_builder
+    ici_step "${BUILDER}_setup" builder_setup
+    ici_step "setup_rosdep" ici_setup_rosdep
 
-    if [ "$CCACHE_DIR" ]; then
-        ici_run "setup_ccache" ici_apt_install ccache
+    if [ -n "$CCACHE_DIR" ]; then
+        ici_step "setup_ccache" ici_apt_install ccache
         export PATH="/usr/lib/ccache:$PATH"
     fi
 
-    extend="/opt/ros/$ROS_DISTRO"
+    extend=${UNDERLAY:?}
 
     if [ -n "$UPSTREAM_WORKSPACE" ]; then
         ici_with_ws "$upstream_ws" ici_build_workspace "upstream" "$extend" "$upstream_ws"
-        extend="$upstream_ws/install"
+        extend="$(ici_extend_space "$upstream_ws")"
     fi
 
     mkdir -p "$target_ws/src"
     ici_import_directory "$target_ws/src" "$TARGET_REPO_PATH"
 
-    ici_run "abi_install_compliance_checker" abi_install_compliance_checker
-    ici_run "abi_install_dumper" abi_install_dumper
+    ici_step "abi_install_compliance_checker" abi_install_compliance_checker
+    ici_step "abi_install_dumper" abi_install_dumper
 
     ici_with_ws "$target_ws" abi_process_workspace "$extend" "$target_ws" target
     ici_with_ws "$base_ws" abi_process_workspace "$extend" "$base_ws" base "$ABICHECK_VERSION"
 
-    abi_report "$base_ws/abi_dumps" "$target_ws/abi_dumps" "/abicheck/reports/$ABICHECK_VERSION"
+    abi_report "$base_ws/abi_dumps" "$target_ws/abi_dumps" "$BASEDIR/abicheck/$ABICHECK_VERSION"
 }

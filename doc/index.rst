@@ -27,17 +27,18 @@ The following `ROS <http://wiki.ros.org/Distributions>`__ / `ROS2 <https://index
 
 * `Indigo <http://wiki.ros.org/indigo>`__ *(EOL)*
 * `Jade <http://wiki.ros.org/jade>`__ *(EOL)*
-* `Kinetic <http://wiki.ros.org/kinetic>`__
+* `Kinetic <http://wiki.ros.org/kinetic>`__ *(EOL)*
 * `Lunar <http://wiki.ros.org/lunar>`__ *(EOL)*
 * `Melodic <http://wiki.ros.org/melodic>`__
-* `Noetic <http://wiki.ros.org/noetic>`__ *(experimental)*
+* `Noetic <http://wiki.ros.org/noetic>`__
 * `Ardent <https://index.ros.org/doc/ros2/Releases/Release-Ardent-Apalone/>`__ *(EOL)*
 * `Bouncy <https://index.ros.org/doc/ros2/Releases/Bouncy/>`__ *(EOL)*
 * `Crystal <https://index.ros.org/doc/ros2/Releases/Release-Crystal-Clemmys/>`__ *(EOL)*
-* `Dashing <https://index.ros.org/doc/ros2/Releases/Release-Dashing-Diademata/>`__
-* `Eloquent <https://index.ros.org/doc/ros2/Releases/Release-Eloquent-Elusor/>`__
+* `Dashing <https://index.ros.org/doc/ros2/Releases/Release-Dashing-Diademata/>`__ *(EOL)*
+* `Eloquent <https://index.ros.org/doc/ros2/Releases/Release-Eloquent-Elusor/>`__ *(EOL)*
 * `Foxy <https://index.ros.org/doc/ros2/Releases/Release-Foxy-Fitzroy/>`__
-* `Rolling <https://index.ros.org/doc/ros2/Releases/Release-Rolling-Ridley/>`__ *(experimental)*
+* `Galactic <https://docs.ros.org/en/foxy/Releases/Release-Galactic-Geochelone.html>`__
+* `Rolling <https://index.ros.org/doc/ros2/Releases/Release-Rolling-Ridley/>`__
 
 Supported CIs
 +++++++++++++
@@ -87,7 +88,7 @@ FAQ
 
 - Q- How does the target package get installed?
 
-  A- *Travis CI* does this. It pulls in your package to an running instance of an operating system of your choice, and place your package under ``/home/travis``.
+  A- *Travis CI* does this. It pulls in your package to a running instance of an operating system of your choice, and place your package under ``/home/travis``.
 
 - Q- The jobs on *Travis CI* are failing. How can I fix them?
 
@@ -97,7 +98,7 @@ FAQ
 
   A- (1) There are a number of variables to customize your jobs that you can learn the usage `in this section <https://github.com/ros-industrial/industrial_ci/blob/master/README.rst#variables-you-can-configure>`__. (2) You can define pre- and post-processes, in addition to the default scripts (it's `travis.sh <https://github.com/ros-industrial/industrial_ci/blob/master/travis.sh>`__ for *Travis CI*). See `this section <https://github.com/ros-industrial/industrial_ci/blob/master/doc/index.rst#run-pre-post-process-custom-commands>`__ for how.
 
-What are checked?
+What is checked?
 ------------------------------------
 
 List of the checked items, in the actual order to be run.
@@ -154,7 +155,7 @@ You can configure the behavior in the `CI config <#terminology>`__ in your clien
 
 Required environment variables:
 
-* ``ROS_DISTRO``: Version of ROS in all lower case. E.g.: ``indigo``. If is is set in the custom Docker (base) image, it might be omitted in the script call.
+* ``ROS_DISTRO``: Version of ROS in all lower case. E.g.: ``indigo``. If it is set in the custom Docker (base) image, it might be omitted in the script call.
 
 Optional environment variables
 ++++++++++++++++++++++++++++++++
@@ -166,22 +167,30 @@ Note that some of these currently tied only to a single option, but we still lea
 * **ABICHECK_VERSION** (default: not set): Used only when ``ABICHECK_URL`` is set. Version name (for display only) of the set of code, which the location is specified in ``ABICHECK_URL`` of. The version will be automatically read from the URL passed in ``ABICHECK_URL`` if possible, but for a URL that doesn't point to a version-based file name (e.g. the link for a tagged version on Gitlab doesn't).
 * **ADDITIONAL_DEBS** (default: not set): More DEBs to be used. List the name of DEB(s delimitted by whitespace if multiple DEBs specified). Needs to be full-qualified Ubuntu package name. E.g.: ``ros-indigo-roslint ros-indigo-gazebo-ros``
 * **AFTER_SCRIPT** (default: not set): Used to specify shell commands that run after all source tests. NOTE: `Unlike Travis CI <https://docs.travis-ci.com/user/customizing-the-build#Breaking-the-Build>`__ where ``after_script`` doesn't affect the build result, the result in the commands specified with this DOES affect the build result. See more `here <./index.rst#run-pre-post-process-custom-commands>`__.
+* **APT_PROXY** (default: not set): Configure APT to use the provided URL as http proxy.
+* **BASEDIR** (default: ``$HOME``): Base directory in which the upstream, target, and downstream workspaces will be built. Note: this directory is bind-mounted, so it can be read by the CI service, but its contents will not persist in the image configured by ``DOCKER_COMMIT``
+* **BLACK_CHECK** (default: not set): If true, will check Python code formatting with `Black <https://black.readthedocs.io/en/stable/>`__.
 * **BUILDER** (default: ``catkin_tools`` for ROS1, ``colcon`` for ROS2): Select the builder e.g. to build ROS1 packages with colcon (options: ``catkin_tools``, ``colcon``, ``catkin_make``, ``catkin_make_isolated``).
-* **CATKIN_LINT** (default: not set. Value range: [true|pedantic]): If ``true``, run `catkin_lint <http://fkie.github.io/catkin_lint/>`__ with ``--explain`` option. If ``pedantic``, ``catkin_lint`` command runs with ``--strict -W2`` option, i.e. more verbose output will print, and the CI job fails if there's any error and/or warning occurs.
+* **CATKIN_LINT** (default: not set. Value range: [true|pedantic]): If ``true``, run `catkin_lint <http://fkie.github.io/catkin_lint/>`__ with ``--explain`` option. If ``pedantic``, ``catkin_lint`` command runs with ``--strict -W2`` option, i.e. more verbose output will print, and the CI job fails if there's any error and/or warning occurs. Industrial CI uses the `latest version available from pypi <https://pypi.org/project/catkin-lint/>`__. If the older version in the `ros repository <http://packages.ros.org/ros/ubuntu/pool/main/c/catkin-lint/>`__ is required, :code:`ADDITIONAL_DEBS='python-catkin-lint'` can be added to the CI Config.
 * **CATKIN_LINT_ARGS** (default: not set): If true, you can pass whatever argument(s) ``catkin_lint`` takes, except ``--explain`` that is set by default. Options can be delimit by space if passing multiple.
-* **CMAKE_ARGS** (default: not set): CMake arguments that get passed to the builder for all workspaces.
+* **CC** / **CXX** (default: not set): Environment variables to specify the C/C++ compilers. If required, these can be installed by specifying ``ADDITIONAL_DEBS``. E.g. ``ADDITIONAL_DEBS=clang CC=clang CXX=clang++`` uses Clang to build the workspaces. Note, these are the regular environment variables - and they work as pass-through in ``industrial_ci`` as well.
 * **CCACHE_DIR** (default: not set): If set, `ccache <https://en.wikipedia.org/wiki/Ccache>`__ gets enabled for your build to speed up the subsequent builds in the same job if anything. See `detail. <https://github.com/ros-industrial/industrial_ci/blob/master/doc/index.rst#cache-build-artifacts-to-speed-up-the-subsequent-builds-if-any>`__
+* **CMAKE_ARGS** (default: not set): CMake arguments that get passed to the builder for all workspaces.
 * **CLANG_FORMAT_CHECK** (default: not set. Value range: [``<format-style>``|``file``]): If set, run the `clang-format <https://clang.llvm.org/docs/ClangFormat.html>`__ check. Set the argument to ``file`` if the style configuration should be loaded from a ``.clang-format`` file, located in one of the parent directories of the source file.
 * **CLANG_FORMAT_VERSION** (default: not set): Version of clang-format to install and use (relates to both the apt package name as well as the executable), e.g., ``CLANG_FORMAT_VERSION=3.8``.
 * **CLANG_TIDY** (default: not set. Value range: [``true``|``pedantic``]): If set, run `clang.tidy <https://clang.llvm.org/extra/clang-tidy/>`__ to check the code in all packages and fail in case of errors. If ``pedantic``, warnings will be treated as errors as well.
 * **CLANG_TIDY_ARGS** (default: not set): Pass additional arguments to ``clang-tidy``, e.g. ``CLANG_TIDY_ARGS='-checks=modernize-*'``
+* **CLANG_TIDY_BASE_REF** (default: not set.): If set, clang-tidy tests will be performed on files only that changed since the given ref. If not set, clang-tidy checks are performed on all files.
+  For pull requests, you usually want to (re)test on changed files only. As all CI providers provide corresponding environment variables to recognize a PR, this can be easily configured, e.g. for github actions:
+
+  :push does not check: ``${{ github.base_ref || github.ref }}``
+  :push performs full check: ``${{ github.base_ref || '' }}``
+  :manually trigger full check: ``${{ github.event_name != 'workflow_dispatch' && (github.base_ref || github.ref) || '' }}``
+
 * **CLANG_TIDY_JOBS** (default: number of processors): Maximum number of parallel jobs that execute ``clang-tidy``. The parallel processing is restricted to per build space (=one ROS package, except for ``BUILDER=catkin_make``)
 * **DEBUG_BASH** (default: not set): If set with any value (e.g. ``true``), all executed commands that are not printed by default to reduce print space will be printed.
-* **DOCKER_BASE_IMAGE** (default: ``$OS_NAME:$OS_CODE_NAME``): Base image used for building the CI image. Could be used to pre-bundle dependecies or to run tests for different architectures. See `this PR <https://github.com/ros-industrial/industrial_ci/pull/174>`__ for more info.
-* **DOCKER_BUILD_OPTS** (default: not set): Used do specify additional build options for Docker.
-* **DOCKER_COMMIT** (default: not set): If set, the docker image, which contains the build and test artifacts, will be saved in the outer-layer docker which runs the ``industrial_ci`` script and thus will become accessible for later usage (e.g. you can then push to your docker registry). If unset, the container will not be commited and is removed. The value is used to specify an image name during the ``docker commit`` command.
+* **DOCKER_COMMIT** (default: not set): If set, the docker image, which contains the build and test artifacts, will be saved in a Docker image. If unset, the container will not be commited and is removed. The value is used to specify an image name during the ``docker commit`` command. *Note* while this allows you to use the resulting docker image with eg. `docker run -it <DOCKER_COMMIT> /bin/bash`, the main intended use is with the `rerun_ci` feature or subsequent `industrial_ci`runs, which also manages attaching the required volumes etc.
 * **DOCKER_COMMIT_MSG** (default: not set): used to specify a commit during the docker commit command which is triggered by setting ``DOCKER_COMMIT``. If unset and if ``DOCKER_COMMIT`` is set then the commit message will be empty. See more ``DOCKER_COMMIT``.
-* **DOCKER_FILE** (default: not set): Instead of pulling an images from the Docker hub, build it from the given path or URL. Please note, this disables the handling of ``ROS_REPOSITORY_PATH`` and ``ROS_DISTRO``, they have to be set in the build file instead.
 * **DOCKER_IMAGE** (default: not set): Selects a Docker images different from default one. Please note, this disables the handling of ``ROS_REPOSITORY_PATH`` and ``ROS_DISTRO`` as ROS needs already to be installed in the image.
 * **DOCKER_PULL** (default: ``true``): set to false if custom docker image should not be pulled, e.g. if it was created locally
 * **DOCKER_RUN_OPTS** (default: not set): Used to specify additional run options for Docker.
@@ -192,18 +201,24 @@ Note that some of these currently tied only to a single option, but we still lea
 * **NOT_TEST_BUILD** (default: not set): If true, tests in ``build`` space won't be run.
 * **NOT_TEST_DOWNSTREAM** (default: not set): If true, tests in the downstream workspace won't be run.
 * **OS_CODE_NAME** (default: derived from ROS_DISTRO): See `this section for the detail <https://github.com/ros-industrial/industrial_ci/blob/master/doc/index.rst#optional-type-of-os-and-distribution>`__.
-* **OS_NAME** (default: ubuntu): Possible options: {``ubuntu``, ``debian``}. See `this section for the detail <https://github.com/ros-industrial/industrial_ci/blob/master/doc/index.rst#optional-type-of-os-and-distribution>`__.
+* **OS_NAME** (default: derived from OS_CODE_NAME): Possible options: {``ubuntu``, ``debian``}. See `this section for the detail <https://github.com/ros-industrial/industrial_ci/blob/master/doc/index.rst#optional-type-of-os-and-distribution>`__.
 * **PARALLEL_BUILDS** (default: 0): Sets the number of parallel build jobs among all packages. ``0`` or ``true`` unsets the limit.
 * **PARALLEL_TESTS** (default: 1): Sets the number of parallel test jobs. ``0`` or ``true`` unsets the limit.
+* **PREFIX** (default: not set): Prefix string or directory for the workspaces created during the build job. The upstream, target, and downstream workspaces will be created at ``$BASEDIR/${PREFIX}<upstream_ws|target_ws|downstream_ws>``.
 * **PRERELEASE** (default: ``false``): If ``true``, run `Prerelease Test on docker that emulates ROS buildfarm <http://wiki.ros.org/bloom/Tutorials/PrereleaseTest/>`__. The usage of Prerelease Test feature is `explained more in this section <https://github.com/ros-industrial/industrial_ci/blob/master/doc/index.rst#run-ros-prerelease-test>`__.
-* **PRERELEASE_DOWNSTREAM_DEPTH** (default: ``0``): Number of the levels of the package dependecies the Prerelease Test targets at. Range of the level is defined by ROS buildfarm (`<http://prerelease.ros.org>`__). NOTE: a job can run exponentially longer for the values greater than ``0`` depending on how many packages depend on your package (and remember a job on Travis CI can only run for up to 50 minutes).
-* **PRERELEASE_REPONAME** (default: ``$TARGET_REPO_NAME``): The  name of the target of Prerelease Test in rosdistro (that you select at `<http://prerelease.ros.org>`__). You can specify this if your repository name differs from the corresponding rosdisto entry. See `here <https://github.com/ros-industrial/industrial_ci/pull/145/files#r108062114>`__ for more usage.
-* **ROS_REPO** (default: ``testing``): ``ROS_REPO`` can be used to set ``ROS_REPOSITORY_PATH`` based on known aliases: ``ros``/``main``, ``ros-shadow-fixed``/``testing`` or ``building``.
+* **PRERELEASE_DOWNSTREAM_DEPTH** (default: ``0``): Number of the levels of the package dependencies the Prerelease Test targets at. Range of the level is defined by ROS buildfarm (`<http://prerelease.ros.org>`__). NOTE: a job can run exponentially longer for the values greater than ``0`` depending on how many packages depend on your package (and remember a job on Travis CI can only run for up to 50 minutes).
+* **PRERELEASE_REPONAME** (default: ``$TARGET_REPO_NAME``): The name of the target of Prerelease Test in rosdistro (that you select at `<http://prerelease.ros.org>`__). You can specify this if your repository name differs from the corresponding rosdisto entry. See `here <https://github.com/ros-industrial/industrial_ci/pull/145/files#r108062114>`__ for more usage.
+* **ROS_REPO** (default: ``testing``): ``ROS_REPO`` can be used to set ``ROS_REPOSITORY_PATH`` based on known aliases: ``ros``/``main``, ``ros-shadow-fixed``/``testing`` or ``building``. ``ROS_REPO=false`` disables the repository set-up.
+* **ROS_REPOSITORY_KEY** (default: not set): Location of ROS' binary repository key; either as URL, file path or fingerprint.
 * **ROS_REPOSITORY_PATH**: Location of ROS' binary repositories where depended packages get installed from (typically both standard repo (``http://packages.ros.org/ros/ubuntu``) and `"Shadow-Fixed" repository <http://wiki.ros.org/ShadowRepository>`__ (``http://packages.ros.org/ros-shadow-fixed/ubuntu``)). Since version 0.3.4, ``ROS_REPO`` is recommended, and ``ROS_REPOSITORY_PATH`` is for more intermediate usage only (e.g. to specify your own binary repository (non-standard / in house)). Backward compatibility is preserved.
 * **ROSDEP_SKIP_KEYS** (default: not set): space-separated list of keys that should get skipped by ``rosdep install``.
 * **ROSINSTALL_FILENAME** (*deprecated*, default: ``.travis.rosinstall``): Only used when ``UPSTREAM_WORKSPACE`` is set to ``file``. See ``UPSTREAM_WORKSPACE`` description.
+* **PYLINT_ARGS** (default: not set): pass command line arguments to ``pylint`` command (e.g. ``--output-format=parseable --errors-only``) - can e.g. be used to ``ignore_modules``
+* **PYLINT_CHECK** (default: false): If ``true``, run ``pylint`` checks
+* **PYLINT_EXCLUDE** (default: not set): can be used to exclude files via the ``-not -path`` filter
 * **TARGET_CMAKE_ARGS** (default: not set): Addtional CMake arguments for target `workspace <#workspace-management>`__.
 * **TARGET_WORKSPACE** (default: ``$TARGET_REPO_PATH``): Definition of sources for target `workspace <#workspace-management>`__.
+* **UNDERLAY** (default: not set): Path to an install space (instead of ``/opt/ros/$ROS_DISTRO``) to be used as an underlay of the workspaces being set up be ICI, e.g. a workspace provided by a custom docker image
 * **UPSTREAM_CMAKE_ARGS** (default: not set): Addtional CMake arguments for upstream `workspace <#workspace-management>`__.
 * **UPSTREAM_WORKSPACE** (default: not set): Definition of upstream `workspace <#workspace-management>`__.
 * **VERBOSE_OUTPUT** (default: ``false``): If ``true``, build tool (e.g. Catkin) output prints in verbose mode.
@@ -222,20 +237,20 @@ A. Upstream workspace: Source packages that are needed for building or testing t
 
    1. Fetch source code (``UPSTREAM_WORKSPACE``)
    2. Install dependencies with ``rosdep``
-   3. Build workspace ``~/upstream_ws``, chained to /opt/ros
+   3. Build workspace ``$BASEDIR/${PREFIX}upstream_ws``, chained to /opt/ros (or ``UNDERLAY``)
 
 B. Target workspace: Packages in your target repository that should get build and tested
 
    1. Fetch source code (``TARGET_WORKSPACE``)
    2. Install dependencies with ``rosdep``
-   3. Build workspace ``~/target_ws``, chained to upstream workspace or /opt/ros
+   3. Build workspace ``$BASEDIR/${PREFIX}target_ws``, chained to upstream workspace or /opt/ros (or ``UNDERLAY``)
    4. run tests (opt-out with ``NOT_TEST_BUILD``)
 
 C. Downstream workspace: Packages that should get tested against your target repository
 
    1. Fetch source code (``DOWNSTREAM_WORKSPACE``)
    2. Install dependencies with rosdep
-   3. Build workspace ``~/downstream_ws``, chained to target workspace
+   3. Build workspace ``$BASEDIR/${PREFIX}downstream_ws``, chained to target workspace
    4. run tests (opt-out with ``NOT_TEST_DOWNSTREAM``)
 
 Workspace definition
@@ -251,7 +266,6 @@ Each workspace can be composed as a sequence of the following items:
   * ``bitbucket`` for Bitbucket repositories
   * ``git``/``git+*``: for any other git repository
 
-  For convenience ``@`` (pip-style) can be used as a separator as well.
   Please note that a version is mandatory. If you really want to use the default branch, which is error-prone and therefore not recommended, you can set it to ``HEAD``.
 
 * URL (=starts with http or https) of a ``*.repos`` or ``*.rosinstall`` file
@@ -300,7 +314,12 @@ Or mixed:
 
 ::
 
-  DOWNSTREAM_WORKSPACE="github:ros-simulation/gazebo_ros_pkgs@melodic-devel https://raw.githubusercontent.com/ros-controls/ros_control/melodic-devel/ros_control.rosinstall -ros_control additional.repos"
+  DOWNSTREAM_WORKSPACE="github:ros-simulation/gazebo_ros_pkgs#melodic-devel https://raw.githubusercontent.com/ros-controls/ros_control/melodic-devel/ros_control.rosinstall -ros_control additional.repos"
+
+To depend on a different repository of a private server using git and the SSH protocol:
+::
+
+  UPSTREAM_WORKSPACE='git+ssh://git@private.server.net/repository#branch'
 
 To filter the target workspace:
 ::
@@ -315,15 +334,11 @@ As you see in the `optional variables section <./index.rst#optional-environment-
 Pulling Docker image from an online hub
 +++++++++++++++++++++++++++++++++++++++
 
-You can pull any *Docker* image by specifying in ``DOCKER_IMAGE`` variable, as long as a  ROS package repository has been set-up (`example <http://wiki.ros.org/kinetic/Installation/Ubuntu#Installation.2BAC8-Ubuntu.2BAC8-Sources.Setup_your_sources.list>`__).
-If your Docker image is missing any required softwate, then you can add it by spef ``ADDITIONAL_DEBS`` (see `variables section <./index.rst#optional-environment-variables>`__).
+You can pull any *Docker* image by specifying in ``DOCKER_IMAGE`` variable.
+If your *Docker* image is ROS-based, you can omit ``ROS_DISTRO`` as long as the Dockerfile sets this environment variable (``ENV ROS_DISTRO``)
+However, ``ROS_REPO`` (or non-recommended ``ROS_REPOSITORY_PATH``), and ``ROS_DISTRO`` can still be used to modify the target container.
 
-Some more notes:
-
-* Setting ``DOCKER_IMAGE`` is a bit tricky:
-   * disables the set-up of ROS based on ``ROS_REPO`` (or non-recommended ``ROS_REPOSITORY_PATH``), and ROS_DISTRO.
-   * but ``ROS_DISTRO`` needs to be set if it was not set in the image.
-* Some common credentials such as ``.docker``, ``.ssh``, ``.subversion`` are passed from CI native platform to Docker container.
+Please note that the entrypoint and command of the image will get ignored.
 
 Pass custom variables to Docker
 -------------------------------
@@ -379,7 +394,7 @@ If your Gitlab CI jobs require access to private repos, additional settings are 
       # gitlab.com:22 SSH-2.0-OpenSSH_7.2p2 Ubuntu-4ubuntu2.2
 
 #. Add a public key (reference for `Gitlab <https://docs.gitlab.com/ce/ssh/README.html#deploy-keys>`__ and for `GitHub <https://developer.github.com/v3/guides/managing-deploy-keys/#deploy-keys>`__) to the private repos your CI jobs accesses. You may need to ask the admin of that repo.
-#. If you are using Docker-in-Docker, make sure that `TMPDIR` is set in your `.gitlab-ci.yml` file so that the SSH agent forwards properly ::
+#. If you are using Docker-in-Docker, make sure that ``TMPDIR`` is set in your ``.gitlab-ci.yml`` file so that the SSH agent forwards properly ::
 
     # The docker runner does not expose /tmp to the docker-in-docker service
     # This config ensures that the temp folder is located inside the project directory (e.g. for prerelease tests or SSH agent forwarding)
@@ -527,10 +542,10 @@ NOTE:
 
      variables:
        CCACHE_DIR: ${CI_PROJECT_DIR}/ccache
-      
+
      cache:
        key: "${CI_JOB_NAME}"
-       paths: 
+       paths:
          - ccache
 
 Run pre/post-process custom commands
@@ -583,7 +598,10 @@ If a dependency needs to extend the build environment, the `*_EMBED` script can 
     - AFTER_INIT='./your_custom_PREprocess.sh'
     - AFTER_INIT_EMBED='source /opt/dependency/prepare_environment.sh'
 
-**rosenv must not be used in \*_EMBED hooks!**
+**rosenv cannot be used in \*_EMBED hooks!**
+
+Per default all scripts are run with unset variables disabled in bash.
+It is possible to opt-out for an individual command by prefixing it with `ici_with_unset_variables`.
 
 Customize outside of the CI process
 +++++++++++++++++++++++++++++++++++
@@ -625,8 +643,8 @@ Use Debian
 
 E.g.:
 
-* ``OS_NAME=debian OS_CODE_NAME=jessie``
-* ``OS_NAME=debian OS_CODE_NAME=stretch``
+* ``OS_CODE_NAME=jessie``
+* ``OS_CODE_NAME=stretch``
 
 All combinations available of OS and distros
 ++++++++++++++++++++++++++++++++++++++++++++++
@@ -674,6 +692,53 @@ Since v0.6.0, you can run locally using ``.travis.yml`` you already defined for 
 
    rosrun industrial_ci run_travis --help
 
+Run locally using GitHub-Workflow config
+++++++++++++++++++++++++++++++++++++++++
+
+You can run GitHub actions locally using `act <https://github.com/nektos/act>`__.
+For its installation, follow the `official install instructions <https://github.com/nektos/act#installation>`__.
+Installation in short:
+
+* install docker engine;
+* install ``act`` using `bash script <https://github.com/nektos/act#bash-script>`__ (tested on Ubuntu and its derivatives) or download the `static binaries <https://github.com/nektos/act/releases>`__;
+* When asked about which ``act`` image you would like to install, choose medium (default choice).
+
+Before running a GH-Action locally, please check that you are using the `industrial_ci` as follows:
+
+::
+
+  - uses: ros-industrial/industrial_ci@master
+    env:
+      ROS_DISTRO: ${{ matrix.ROS_DISTRO }}
+      ROS_REPO: ${{ matrix.ROS_REPO }}
+
+Or for more complicated cases:
+
+::
+
+  - uses: ros-industrial/industrial_ci@master
+      with:
+        config: ${{toJSON(matrix.env)}}
+
+Often used configuration is actually not supported by GH (more details in #590)
+
+::
+
+  - uses: ros-industrial/industrial_ci@master
+      env: ${{matrix.env}}
+
+After that, go to the package you would like to test and start a workflow using act:
+
+* ``act`` - execute all workflows
+* ``act -l`` - list all defined workflows
+* ``act -j <my_workflow>`` - execute specific workflow
+
+Some useful flags:
+
+* to get more detailed output, use ``-v`` flag
+* to reuse action containers, use ``-r`` flag (makes your actions much faster)
+* for everything else check `act flags <https://github.com/nektos/act#flags>`__
+
 Recurring runs for debugging
 ++++++++++++++++++++++++++++
 Please note that ``run_ci`` and ``run_travis`` will download all dependencies every time, just as CI services would do.
@@ -707,6 +772,8 @@ Note for rerun_ci limitations
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ``rerun_ci`` is managing ``DOCKER_COMMIT`` and ``DOCKER_COMMIT_MSG`` variables under the hood, so if the user set them they will not take effect, unlike `normal cases <#re-use-the-container-image>`__.
+
+If you are using this feature to have a cached way to run ci locally you probably want your dependencies to be updated just as they are when run on a remote ci service.  To achieve this you can cause the target workspace to be pulled by adding this argument: ``AFTER_SETUP_TARGET_WORKSPACE='vcs pull ~/target_ws/src/'``.
 
 For maintainers of industrial_ci repository
 ================================================

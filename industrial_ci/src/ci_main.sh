@@ -21,41 +21,56 @@
 ## See ./README.rst for the detailed usage.
 
 set -e # exit script on errors
-if [ "$DEBUG_BASH" ]; then set -x; fi # print trace if DEBUG
+[[ "${BASH_VERSINFO[0]}_${BASH_VERSINFO[1]}" < "4_4" ]] || set -u
 
-# Define some env vars that need to come earlier than util.sh
 export ICI_SRC_PATH; ICI_SRC_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"  # The path on CI service (e.g. Travis CI) to industrial_ci src dir.
+ _CLEANUP=""
+
+# shellcheck source=industrial_ci/src/env.sh
+source "${ICI_SRC_PATH}/env.sh"
+if [ "$DEBUG_BASH" = true ]; then set -x; fi # print trace if DEBUG
 
 # shellcheck source=industrial_ci/src/util.sh
 source "${ICI_SRC_PATH}/util.sh"
-# shellcheck source=industrial_ci/src/docker.sh
-source "${ICI_SRC_PATH}/docker.sh"
-# shellcheck source=industrial_ci/src/workspace.sh
-source "${ICI_SRC_PATH}/workspace.sh"
-# shellcheck source=industrial_ci/src/env.sh
-source "${ICI_SRC_PATH}/env.sh"
 
-trap ici_exit EXIT # install industrial_ci exit handler
+# shellcheck source=industrial_ci/src/deprecated.sh
+source "${ICI_SRC_PATH}/deprecated.sh"
+
+# shellcheck source=industrial_ci/src/ros.sh
+source "${ICI_SRC_PATH}/ros.sh"
+
+ici_setup
+
+export ISOLATION=${ISOLATION:-docker}
+if [ "${CI:-}" != true ] ; then
+  if [ "${ISOLATION}" = "shell" ]; then
+    ici_warn 'ISOLATION=shell needs CI=true, falling back to ISOLATION=docker'
+  fi
+  ISOLATION=docker
+fi
+ici_source_component ISOLATION isolation
+
+ici_configure_ros
 
 # Start prerelease, and once it finishs then finish this script too.
-if [ "$PRERELEASE" == true ]; then
-  # shellcheck source=industrial_ci/src/tests/ros_prerelease.sh
-  source "${ICI_SRC_PATH}/tests/ros_prerelease.sh"
-  run_ros_prerelease
+if [ "$PRERELEASE" = true ]; then
+  TEST=ros_prerelease
 elif [ -n "$ABICHECK_URL" ]; then
-  # shellcheck source=industrial_ci/src/tests/abi_check.sh
-  source "${ICI_SRC_PATH}/tests/abi_check.sh"
-  run_abi_check
+  TEST=abi_check
 elif [ -n "$CLANG_FORMAT_CHECK" ]; then
-  # shellcheck source=industrial_ci/src/tests/clang_format_check.sh
-  source "${ICI_SRC_PATH}/tests/clang_format_check.sh"
-  run_clang_format_check
-else
-  # shellcheck source=industrial_ci/src/tests/source_tests.sh
-  source "${ICI_SRC_PATH}/tests/source_tests.sh"
-  run_source_tests
+  TEST=clang_format_check
+elif [ "$BLACK_CHECK" = true ]; then
+  TEST=black_check
+elif [ -z "$TEST" ]; then
+  TEST=source_tests
 fi
 
-ici_hook "after_script"
+ici_source_component TEST tests
 
+ici_log "Running test '$TEST'"
+name=$(basename "$TEST")
+name=${name%.*}
+
+"prepare_$name" || ici_exit
+ici_isolate "$TEST" "run_${name}" || ici_exit
 ici_exit 0

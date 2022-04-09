@@ -15,26 +15,29 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+function prepare_clang_format_check() {
+  true
+}
+
 function run_clang_format_check() {
   local err=0
-  local path; path=$(mktemp -d)
-
-  DOCKER_IMAGE="$DOCKER_BASE_IMAGE" ici_require_run_in_docker # this script must be run in docker
+  local path
+  ici_make_temp_dir path
 
   # Check whether a specific version of clang-format is desired
   local clang_format_executable="clang-format${CLANG_FORMAT_VERSION:+-$CLANG_FORMAT_VERSION}"
 
   ici_time_start install_clang_format
-  ici_quiet ici_apt_install git-core "$clang_format_executable"
+  ici_apt_install git-core "$clang_format_executable"
   ici_time_end # install_clang_format
 
-  local -a sources
+  local sources=()
   ici_parse_env_array sources TARGET_WORKSPACE
-  ici_run "prepare_sourcespace" ici_prepare_sourcespace "$path" "${sources[@]}"
+  ici_step "prepare_sourcespace" ici_prepare_sourcespace "$path" "${sources[@]}"
 
   ici_time_start run_clang_format_check
   while read -r file; do
-    echo "Checking '${file#$path/}'"
+    ici_log "Checking '${file#"$path/"}'"
     if ! $clang_format_executable -style="$CLANG_FORMAT_CHECK" "$file" | git diff --exit-code "$file" - ; then
       err=$((err +1))
     fi
@@ -42,9 +45,7 @@ function run_clang_format_check() {
 
   if [ "$err" -ne "0" ]; then
       ici_error "Clang format check failed for $err file(s)."
-      echo "Changes required to comply to formatting rules. See diff above."
-      exit 1
   fi
-  echo 'Clang format check went successful.'
+  ici_log 'Clang format check went successful.'
   ici_time_end # run_clang_format_check
 }
