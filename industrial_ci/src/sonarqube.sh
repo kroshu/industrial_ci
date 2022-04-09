@@ -78,12 +78,12 @@ function sonarqube_analyze {
 	local cov_report_path="/root/sonar/coverage_reports"
 	mkdir ${cov_report_path}
 
-	if [ "${github.event_name}" == "push" ]; then
-		branch_args=("-Dsonar.branch.name=${github.event.ref##*/}")
+	if [ "${EVENT_NAME}" == "push" ]; then
+		branch_args=("-Dsonar.branch.name=${BRANCH}")
 	else
-		branch_args=("-Dsonar.pullrequest.key=${github.event.number}"
-					 "-Dsonar.pullrequest.branch=\"${github.event.pull_request.head.ref}\""
-					 "-Dsonar.pullrequest.base=\"${github.event.pull_request.base.ref}\"")
+		branch_args=("-Dsonar.pullrequest.key=${PR_NUMBER}"
+					 "-Dsonar.pullrequest.branch=\"${PR_BRANCH}\""
+					 "-Dsonar.pullrequest.base=\"${PR_NUMBER}\"")
 	fi
 
 	while read -r package
