@@ -79,7 +79,7 @@ function sonarqube_analyze {
 	mkdir ${cov_report_path}
 
 	if [ "${EVENT_NAME}" == "push" ]; then
-		branch_args=("-Dsonar.branch.name=${BRANCH}")
+		branch_args=("-Dsonar.branch.name=${BRANCH##*/}")
 	else
 		branch_args=("-Dsonar.pullrequest.key=${PR_NUMBER}"
 					 "-Dsonar.pullrequest.branch=\"${PR_BRANCH}\""
