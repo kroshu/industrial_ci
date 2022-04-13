@@ -21,6 +21,7 @@ Some features are not supported anymore:
 * Support of ROS hydro
 * Devel space builds
 * Testing installed \*.test files
+* Building Docker images
 * Injecting QEMU (see [`INJECT_QEMU`](#inject_qemu))
 
 If you depend on these, you can still use the [legacy](https://github.com/ros-industrial/industrial_ci/tree/legacy) version.
@@ -51,6 +52,7 @@ Special care must be taken, if you use any of these variables:
 * [`CATKIN_PARALLEL_TEST_JOBS`](#catkin_parallel_test_jobs)
 * [`CMAKE_ARGS`](#cmake_args)
 * [`DOCKER_BASE_IMAGE`](#docker_base_image)
+* [`DOCKER_BUILD_OPTS`](#docker_build_opts)
 * [`DOCKER_FILE`](#docker_file)
 * [`DOCKER_IMAGE`](#docker_image)
 * [`HASHKEY_SKS`](#hashkey_sks)
@@ -71,16 +73,11 @@ Special care must be taken, if you use any of these variables:
 
 ## Changes summary
 
-### Docker images
-
-Instead of creating a new Docker image on every build, `industrial_ci` will try to use the [official ROS images](https://hub.docker.com/_/ros/), if possible (ROS kinetic and newer, ROS_REPO=ros/ros2).
-You can set `DEFAULT_DOCKER_IMAGE=''` to opt-out.
-
 ### Workspace layout
 
 The workspace layout has changed (new [workspace management](index.rst#workspace-management)).
-The target workspace is now located in `~/target_ws`.
-The upstream workspace packages are now located in `~/upstream_ws`.
+The target workspace is now located in `$BASEDIR/${PREFIX}target_ws`.
+The upstream workspace packages are now located in `$BASEDIR/${PREFIX}upstream_ws`.
 
 ### Job control
 
@@ -131,6 +128,7 @@ This variable is still supported, but the [script environment has changed](#hook
 ### APTKEY_STORE_HTTPS
 
 It is not a fallback for [`APTKEY_STORE_SKS`](#aptkey_store_sks) anymore, but will disable it and download the key from the provided URL directly.
+Please migrate to `ROS_REPOSITORY_KEY`, which combines [`APTKEY_STORE_HTTPS`](#aptkey_store_https) and [`HASHKEY_SKS`](#hashkey_sks)
 
 ### APTKEY_STORE_SKS
 
@@ -184,11 +182,15 @@ This variable was introduced recently and is still supported, but its content wi
 
 ### DOCKER_BASE_IMAGE
 
-This variable is still supported, but the [workspace layout has changed](#workspace-layout).
+This variable is not needed anymore. Please specify [DOCKER_IMAGE](#docker_image) instead.
+
+### DOCKER_BUILD_OPTS
+
+This variable is not used anymore, because support for building Docker images was removed.
 
 ### DOCKER_FILE
 
-This variable is still supported, but the [workspace layout has changed](#workspace-layout).
+This variable is not used anymore, because support for building Docker images was removed.
 
 ### DOCKER_IMAGE
 
@@ -197,6 +199,7 @@ This variable is still supported, but the [workspace layout has changed](#worksp
 ### HASHKEY_SKS
 
 Will only be used if [`APTKEY_STORE_HTTPS`](#aptkey_store_https) is not set.
+Please migrate to `ROS_REPOSITORY_KEY`, which combines [`APTKEY_STORE_HTTPS`](#aptkey_store_https) and [`HASHKEY_SKS`](#hashkey_sks)
 
 ### INJECT_QEMU
 

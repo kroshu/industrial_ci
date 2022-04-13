@@ -25,10 +25,10 @@ function _append_job_opts() {
 }
 
 function _run_catkin_make_isolated () {
-  local target=$1; shift
-  local extend=$1; shift
-  local ws=$1; shift
-  ici_exec_in_workspace "$extend" "$ws" catkin_make_isolated --build-space "$ws/build" --install-space "$ws/install" --make-args "$target" "$@"
+    local target=$1; shift
+    local extend=$1; shift
+    local ws=$1; shift
+    ici_cmd ici_exec_in_workspace "$extend" "$ws" catkin_make_isolated --build-space "$ws/build" --devel-space "$ws/devel" --install-space "$ws/install" --make-args "$target" "$@"
 }
 
 function builder_setup {
@@ -36,19 +36,23 @@ function builder_setup {
 }
 
 function builder_run_build {
-    local -a opts
+    local extend=$1; shift
+    local ws=$1; shift
+    local opts=()
     _append_job_opts opts PARALLEL_BUILDS 0
-    _run_catkin_make_isolated install "${opts[@]}" "$@"
+    _run_catkin_make_isolated install "$extend" "$ws" "${opts[@]}" "$@"
 }
 
 function builder_run_tests {
-    local -a opts
+    local extend=$1; shift
+    local ws=$1; shift
+    local opts=()
     _append_job_opts opts PARALLEL_TESTS 1
-    _run_catkin_make_isolated run_tests "$1" "$2" "${opts[@]}"
+    _run_catkin_make_isolated run_tests "$extend" "$ws" "${opts[@]}"
 }
 
 function builder_test_results {
     local extend=$1; shift
     local ws=$1; shift
-    ici_exec_in_workspace "$extend" "$ws" catkin_test_results --verbose
+    ici_cmd ici_exec_in_workspace "$extend" "$ws" catkin_test_results --verbose
 }
