@@ -40,14 +40,20 @@ function builder_run_build {
 }
 
 function builder_run_build_in_wrapper {
-	local build_wrapper=$1; shift
-	local build_wrapper_args=$1; shift
-	local extend=$1; shift
-	local ws=$1; shift
-	
-	read -ra build_wrapper_args_arr <<< "$build_wrapper_args"
-	
-    ici_exec_in_workspace "$extend" "$ws" "$build_wrapper" "${build_wrapper_args_arr[@]}" colcon build --event-handlers "${_colcon_event_handlers[@]}" "$@"
+  	local build_wrapper=$1; shift
+  	local build_wrapper_args=$1; shift
+    local extend=$1; shift
+    local ws=$1; shift
+    local opts=(--event-handlers "${_colcon_event_handlers[@]}")
+    local jobs
+    read -ra build_wrapper_args_arr <<< "$build_wrapper_args"
+    ici_parse_jobs jobs PARALLEL_BUILDS 0
+    if [ "$jobs" -eq 1 ]; then
+        opts+=(--executor sequential)
+    elif [ "$jobs" -gt 1 ]; then
+        opts+=(--executor parallel --parallel-workers "$jobs")
+    fi
+    ici_cmd ici_exec_in_workspace "$extend" "$ws" "$build_wrapper" "${build_wrapper_args_arr[@]}" colcon build "${opts[@]}" "$@"
 }
 
 function builder_run_tests {

@@ -29,6 +29,15 @@ function _run_catkin_make () {
     local ws=$1; shift
     ici_cmd ici_exec_in_workspace "$extend" "$ws" catkin_make "$@" --make-args "$target"
 }
+function _run_catkin_make_in_wrapper () {
+  	local build_wrapper=$1; shift
+  	local build_wrapper_args=$1; shift
+    local target=$1; shift
+    local extend=$1; shift
+    local ws=$1; shift
+    read -ra build_wrapper_args_arr <<< "$build_wrapper_args"
+    ici_cmd ici_exec_in_workspace "$extend" "$ws" "$build_wrapper" "${build_wrapper_args_arr[@]}" catkin_make "$@" --make-args "$target"
+}
 
 function builder_setup {
     ici_install_pkgs_for_command catkin_make "ros-${ROS_DISTRO}-catkin"
@@ -40,6 +49,16 @@ function builder_run_build {
     local opts=()
     _append_job_opts opts PARALLEL_BUILDS 0
     _run_catkin_make install "$extend" "$ws" "${opts[@]}" "$@"
+}
+
+function builder_run_build_in_wrapper {
+  	local build_wrapper=$1; shift
+  	local build_wrapper_args=$1; shift
+    local extend=$1; shift
+    local ws=$1; shift
+    local opts=()
+    _append_job_opts opts PARALLEL_BUILDS 0
+    _run_catkin_make_in_wrapper "$build_wrapper" "${build_wrapper_args}" install "$extend" "$ws" "${opts[@]}" "$@"
 }
 
 function builder_run_tests {

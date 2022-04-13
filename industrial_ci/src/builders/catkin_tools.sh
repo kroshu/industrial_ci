@@ -48,6 +48,21 @@ function builder_run_build {
     ici_cmd ici_exec_in_workspace "$extend" "$ws" catkin build "${opts[@]}" --summarize  --no-status "$@"
 }
 
+function builder_run_build_in_wrapper {
+  	local build_wrapper=$1; shift
+  	local build_wrapper_args=$1; shift
+    local extend=$1; shift
+    local ws=$1; shift
+    local opts=()
+    read -ra build_wrapper_args_arr <<< "$build_wrapper_args"
+    if [ "${VERBOSE_OUTPUT:-false}" != false ]; then
+        opts+=("-vi")
+    fi
+    _append_job_opts opts PARALLEL_BUILDS 0
+    _catkin_config "$extend" "$ws"
+    ici_cmd ici_exec_in_workspace "$extend" "$ws" "$build_wrapper" "${build_wrapper_args_arr[@]}" catkin build "${opts[@]}" --summarize  --no-status "$@"
+}
+
 function builder_run_tests {
     local extend=$1; shift
     local ws=$1; shift
