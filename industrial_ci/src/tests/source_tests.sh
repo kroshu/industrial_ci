@@ -167,9 +167,9 @@ function run_source_tests {
         export PATH="/usr/lib/ccache:$PATH"
     fi
 
-    if [ -n "$SONARQUBE" ]; then
-      source "${ICI_SRC_PATH}/sonarqube.sh"
-    	ici_step "sonarqube_setup" sonarqube_setup
+    if [ -n "$ANALYZER" ]; then
+      ici_source_component ANALYZER analyzers
+    	ici_step "analyzer_setup" analyzer_setup
     fi
 
     ici_source_builder
@@ -194,11 +194,11 @@ function run_source_tests {
         ici_with_ws "$target_ws" ici_test_workspace "target" "$extend" "$target_ws"
     fi
 
-    if [ -n "$SONARQUBE" ]; then
+    if [ -n "$ANALYSIS" ]; then
       if [ -n "$TEST_COVERAGE" ]; then
-        ici_with_ws "$target_ws" ici_step "generating_coverage_reports" sonarqube_generate_coverage_report "$extend" "$target_ws"
+        ici_with_ws "$target_ws" ici_step "generating_coverage_reports" analyzer_generate_coverage_report "$extend" "$target_ws"
       fi
-      ici_with_ws "$target_ws" ici_step "analyzing_target_ws" sonarqube_analyze "$target_ws"
+      ici_with_ws "$target_ws" ici_step "analyzing_target_ws" analyzer_run_analysis "$target_ws"
     fi
 
     if [ "$CATKIN_LINT" == "true" ] || [ "$CATKIN_LINT" == "pedantic" ]; then

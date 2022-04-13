@@ -15,36 +15,35 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-function sonarqube_setup {
+function analyzer_setup {
 	mkdir -p ~/sonar
 
 	ici_install_pkgs_for_command wget wget
 	ici_install_pkgs_for_command ca-certificates ca-certificates
-    wget -P ~/sonar/downloads https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip
-    wget -P ~/sonar/downloads https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.4.0.2170.zip
+	wget -P ~/sonar/downloads https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip
+	wget -P ~/sonar/downloads https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.4.0.2170.zip
 
-    ici_install_pkgs_for_command unzip unzip
-    unzip ~/sonar/downloads/build-wrapper-linux-x86.zip -d ~/sonar/tools
-    unzip ~/sonar/downloads/sonar-scanner-cli-4.4.0.2170.zip -d ~/sonar/tools
+	ici_install_pkgs_for_command unzip unzip
+	unzip ~/sonar/downloads/build-wrapper-linux-x86.zip -d ~/sonar/tools
+	unzip ~/sonar/downloads/sonar-scanner-cli-4.4.0.2170.zip -d ~/sonar/tools
 
-    chmod +x ~/sonar/tools/build-wrapper-linux-x86/build-wrapper-linux-x86-64
-    #chown root:root ~/sonar/build-wrapper-linux-x86/build-wrapper-linux-x86-64
+	chmod +x ~/sonar/tools/build-wrapper-linux-x86/build-wrapper-linux-x86-64
 
-    ln -s ~/sonar/tools/build-wrapper-linux-x86/build-wrapper-linux-x86-64 /usr/local/bin/sonar-build-wrapper
-    ln -s ~/sonar/tools/sonar-scanner-4.4.0.2170/bin/sonar-scanner /usr/local/bin/sonar-scanner
+	ln -s ~/sonar/tools/build-wrapper-linux-x86/build-wrapper-linux-x86-64 /usr/local/bin/sonar-build-wrapper
+	ln -s ~/sonar/tools/sonar-scanner-4.4.0.2170/bin/sonar-scanner /usr/local/bin/sonar-scanner
 
-    wget -P /usr/lib/cmake/CodeCoverage "https://raw.githubusercontent.com/kroshu/kroshu-tools/master/cmake/CodeCoverage.cmake"
+	wget -P /usr/lib/cmake/CodeCoverage "https://raw.githubusercontent.com/kroshu/kroshu-tools/master/cmake/CodeCoverage.cmake"
 
-    ici_asroot apt-get install -y default-jre
+	ici_asroot apt-get install -y default-jre
 
-    export BUILD_WRAPPER="sonar-build-wrapper"
-    export BUILD_WRAPPER_ARGS="--out-dir /root/sonar/bw_output"
-    export SONARQUBE_PACKAGES_FILE="/root/sonar/packages"
-    # export TEST_COVERAGE_PACKAGES_FILE="/root/sonar/coverage_pacakges"
-    export TARGET_CMAKE_ARGS="${TARGET_CMAKE_ARGS} -DSONARQUBE_PACKAGES_FILE=${SONARQUBE_PACKAGES_FILE} --no-warn-unused-cli"
-    if [ -n "$TEST_COVERAGE" ]; then
-    	export TARGET_CMAKE_ARGS="${TARGET_CMAKE_ARGS} -DTEST_COVERAGE=on "
-    fi
+	export BUILD_WRAPPER="sonar-build-wrapper"
+	export BUILD_WRAPPER_ARGS="--out-dir /root/sonar/bw_output"
+	export SONARQUBE_PACKAGES_FILE="/root/sonar/packages"
+	# export TEST_COVERAGE_PACKAGES_FILE="/root/sonar/coverage_pacakges"
+	export TARGET_CMAKE_ARGS="${TARGET_CMAKE_ARGS} -DSONARQUBE_PACKAGES_FILE=${SONARQUBE_PACKAGES_FILE} --no-warn-unused-cli"
+	if [ -n "$TEST_COVERAGE" ]; then
+		export TARGET_CMAKE_ARGS="${TARGET_CMAKE_ARGS} -DTEST_COVERAGE=on "
+	fi
 
 	touch ${SONARQUBE_PACKAGES_FILE}
 	# touch ${TEST_COVERAGE_PACKAGES_FILE}
@@ -59,7 +58,7 @@ function sonarqube_setup {
 #	}
 #}
 
-function sonarqube_generate_coverage_report {
+function analyzer_generate_coverage_report {
 	local -a args cmake_args
 	ici_parse_env_array cmake_args CMAKE_ARGS
 
@@ -72,7 +71,7 @@ function sonarqube_generate_coverage_report {
 	builder_run_build "$@" "${args[@]}"
 }
 
-function sonarqube_analyze {
+function analyzer_run_analysis {
 	local ws=$1; shift
 	local -a branch_args
 	local cov_report_path="/root/sonar/coverage_reports"
