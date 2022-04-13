@@ -67,6 +67,7 @@ function analyzer_run_analysis {
 	local cov_report_path="/root/sonar/coverage_reports"
 	mkdir ${cov_report_path}
     shopt -s extglob
+    ici_parse_jobs jobs PARALLEL_TESTS 1
 
 	if [ "${EVENT_NAME}" == "push" ]; then
 		branch_args=("-Dsonar.branch.name=${BRANCH##?(refs/heads/)}")
@@ -88,6 +89,7 @@ function analyzer_run_analysis {
     			  -Dsonar.cfamily.build-wrapper-output="/root/sonar/bw_output" \
     			  -Dsonar.cfamily.gcov.reportsPath="${cov_report_path}" \
     			  -Dsonar.cfamily.cache.enabled=false \
+                  -Dsonar.cfamily.threads=${jobs} \
     			  "${branch_args[@]}"
 
 }
