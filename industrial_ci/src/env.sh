@@ -70,6 +70,15 @@ export PARALLEL_TESTS=${PARALLEL_TESTS:-1}
 
 export PRERELEASE=${PRERELEASE:-false}
 
+export SONARQUBE=${SONARQUBE:-false}
+export SONAR_TOKEN=${SONAR_TOKEN:-}
+export TEST_COVERAGE=${TEST_COVERAGE:-false}
+export BUILD_WRAPPER=${BUILD_WRAPPER:-}
+export BRANCH=${BRANCH:-}
+export PR_BRANCH=${PR_BRANCH:-}
+export PR_BASE=${PR_BASE:-}
+export PR_NUMBER=${PR_NUMBER:-}
+
 case "${OS_CODE_NAME-}" in
 # https://wiki.debian.org/DebianReleases#Production_Releases
 "jessie"|"stretch"|"buster"|"bullseye"|"bookwork"|"trixie")

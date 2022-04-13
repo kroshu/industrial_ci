@@ -161,7 +161,6 @@ function run_source_tests {
     upstream_ws=$BASEDIR/${PREFIX}upstream_ws
     target_ws=$BASEDIR/${PREFIX}target_ws
     downstream_ws=$BASEDIR/${PREFIX}downstream_ws
-    source "${ICI_SRC_PATH}/sonarqube.sh"
 
     if [ -n "$CCACHE_DIR" ]; then
         ici_step "setup_ccache" ici_apt_install ccache
@@ -169,6 +168,7 @@ function run_source_tests {
     fi
 
     if [ -n "$SONARQUBE" ]; then
+      source "${ICI_SRC_PATH}/sonarqube.sh"
     	ici_step "sonarqube_setup" sonarqube_setup
     fi
 
