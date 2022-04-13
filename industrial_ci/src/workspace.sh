@@ -237,7 +237,7 @@ function ici_import_url {
     case "$url" in
     *.zip|*.tar|*.tar.*|*.tgz|*.tbz2)
         ici_install_pkgs_for_command bsdtar bsdtar
-        processor=(bsdtar -o -C "$sourcespace" -xf-)
+        processor=(bsdtar -C "$sourcespace" -xf-)
         ;;
     *)
         ici_install_pkgs_for_command vcs python3-vcstool
@@ -395,10 +395,10 @@ function ici_build_workspace {
     ici_step "setup_${name}_workspace" ici_prepare_sourcespace "$ws/src" "${sources[@]}"
     ici_step "install_${name}_dependencies" ici_install_dependencies "$extend" "$ROSDEP_SKIP_KEYS" "$ws/src"
     if [ -n "$ANALYZER" ]; then
-    	ici_step "build_${name}_workspace" builder_run_build_in_wrapper "$BUILD_WRAPPER" "$BUILD_WRAPPER_ARGS" "$extend" "$ws" "${args[@]}"
-	else
-		ici_step "build_${name}_workspace" builder_run_build "$extend" "$ws" "${args[@]}"
-	fi
+        ici_step "build_${name}_workspace" builder_run_build_in_wrapper "$BUILD_WRAPPER" "$BUILD_WRAPPER_ARGS" "$extend" "$ws" "${args[@]}"
+    else
+        ici_step "build_${name}_workspace" builder_run_build "$extend" "$ws" "${args[@]}"
+    fi
 }
 
 function ici_test_workspace {

@@ -168,8 +168,8 @@ function run_source_tests {
     fi
 
     if [ -n "$ANALYZER" ]; then
-      ici_source_component ANALYZER analyzers
-    	ici_step "analyzer_setup" analyzer_setup
+        ici_source_component ANALYZER analyzers
+        ici_step "analyzer_setup" analyzer_setup
     fi
 
     ici_source_builder
@@ -187,7 +187,6 @@ function run_source_tests {
     if [ "${CLANG_TIDY:-false}" != false ]; then
         TARGET_CMAKE_ARGS="$TARGET_CMAKE_ARGS -DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
     fi
-
     ici_with_ws "$target_ws" ici_build_workspace "target" "$extend" "$target_ws"
 
     if [ "$NOT_TEST_BUILD" != "true" ]; then
@@ -195,10 +194,10 @@ function run_source_tests {
     fi
 
     if [ -n "$ANALYZER" ]; then
-      if [ -n "$TEST_COVERAGE" ]; then
-        ici_with_ws "$target_ws" ici_step "generating_coverage_reports" analyzer_generate_coverage_report "$extend" "$target_ws"
-      fi
-      ici_with_ws "$target_ws" ici_step "analyzing_target_ws" analyzer_run_analysis "$target_ws"
+        if [ -n "$TEST_COVERAGE" ]; then
+            ici_with_ws "$target_ws" ici_step "generating_coverage_reports" analyzer_generate_coverage_report "$extend" "$target_ws"
+        fi
+        ici_with_ws "$target_ws" ici_step "analyzing_target_ws" analyzer_run_analysis "$target_ws"
     fi
 
     if [ "$CATKIN_LINT" == "true" ] || [ "$CATKIN_LINT" == "pedantic" ]; then

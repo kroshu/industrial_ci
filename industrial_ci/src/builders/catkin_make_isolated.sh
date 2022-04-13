@@ -31,8 +31,8 @@ function _run_catkin_make_isolated () {
     ici_cmd ici_exec_in_workspace "$extend" "$ws" catkin_make_isolated --build-space "$ws/build" --devel-space "$ws/devel" --install-space "$ws/install" --make-args "$target" "$@"
 }
 function _run_catkin_make_isolated_in_wrapper () {
-  	local build_wrapper=$1; shift
-  	local build_wrapper_args=$1; shift
+    local build_wrapper=$1; shift
+    local build_wrapper_args=$1; shift
     local target=$1; shift
     local extend=$1; shift
     local ws=$1; shift
@@ -53,8 +53,8 @@ function builder_run_build {
 }
 
 function builder_run_build_in_wrapper {
-  	local build_wrapper=$1; shift
-  	local build_wrapper_args=$1; shift
+    local build_wrapper=$1; shift
+    local build_wrapper_args=$1; shift
     local extend=$1; shift
     local ws=$1; shift
     local opts=()

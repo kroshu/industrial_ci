@@ -39,24 +39,14 @@ function analyzer_setup {
 	export BUILD_WRAPPER="sonar-build-wrapper"
 	export BUILD_WRAPPER_ARGS="--out-dir /root/sonar/bw_output"
 	export SONARQUBE_PACKAGES_FILE="/root/sonar/packages"
-	# export TEST_COVERAGE_PACKAGES_FILE="/root/sonar/coverage_pacakges"
 	export TARGET_CMAKE_ARGS="${TARGET_CMAKE_ARGS} -DSONARQUBE_PACKAGES_FILE=${SONARQUBE_PACKAGES_FILE} --no-warn-unused-cli"
 	if [ -n "$TEST_COVERAGE" ]; then
 		export TARGET_CMAKE_ARGS="${TARGET_CMAKE_ARGS} -DTEST_COVERAGE=on "
 	fi
 
 	touch ${SONARQUBE_PACKAGES_FILE}
-	# touch ${TEST_COVERAGE_PACKAGES_FILE}
 
 }
-
-#function sonarqube_modify_builders {
-#    echo "Builders modified"
-#	colcon() {
-#		echo "Using modified colcon"
-#		sonar-build-wrapper --out-dir /root/sonar/bw_output colcon "$@"
-#	}
-#}
 
 function analyzer_generate_coverage_report {
 	local -a args cmake_args
