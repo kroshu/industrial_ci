@@ -11,10 +11,6 @@ language: generic
 git:
   quiet: true
 
-branches:
-  only:
-  - master
-
 env:
   matrix:
     - ROS_DISTRO=noetic
