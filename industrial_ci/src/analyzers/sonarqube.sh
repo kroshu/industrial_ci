@@ -66,9 +66,10 @@ function analyzer_run_analysis {
 	local -a branch_args
 	local cov_report_path="/root/sonar/coverage_reports"
 	mkdir ${cov_report_path}
+    shopt -s extglob
 
 	if [ "${EVENT_NAME}" == "push" ]; then
-		branch_args=("-Dsonar.branch.name=${BRANCH##*(refs/heads/)}")
+		branch_args=("-Dsonar.branch.name=${BRANCH##?(refs/heads/)}")
 	else
 		branch_args=("-Dsonar.pullrequest.key=${PR_NUMBER}"
 					 "-Dsonar.pullrequest.branch=\"${PR_BRANCH}\""
