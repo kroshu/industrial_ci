@@ -194,7 +194,7 @@ function run_source_tests {
         ici_with_ws "$target_ws" ici_test_workspace "target" "$extend" "$target_ws"
     fi
 
-    if [ -n "$ANALYSIS" ]; then
+    if [ -n "$ANALYZER" ]; then
       if [ -n "$TEST_COVERAGE" ]; then
         ici_with_ws "$target_ws" ici_step "generating_coverage_reports" analyzer_generate_coverage_report "$extend" "$target_ws"
       fi
