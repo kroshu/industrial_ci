@@ -394,7 +394,7 @@ function ici_build_workspace {
 
     ici_step "setup_${name}_workspace" ici_prepare_sourcespace "$ws/src" "${sources[@]}"
     ici_step "install_${name}_dependencies" ici_install_dependencies "$extend" "$ROSDEP_SKIP_KEYS" "$ws/src"
-    if [ -n "$SONARQUBE" ]; then
+    if [ -n "$ANALYZER" ]; then
     	ici_step "build_${name}_workspace" builder_run_build_in_wrapper "$BUILD_WRAPPER" "$BUILD_WRAPPER_ARGS" "$extend" "$ws" "${args[@]}"
 	else
 		ici_step "build_${name}_workspace" builder_run_build "$extend" "$ws" "${args[@]}"
