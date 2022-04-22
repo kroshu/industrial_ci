@@ -75,7 +75,7 @@ function analyzer_run_analysis {
 	else
 		branch_args=("-Dsonar.pullrequest.key=${PR_NUMBER}"
 					 "-Dsonar.pullrequest.branch=\"${PR_BRANCH}\""
-					 "-Dsonar.pullrequest.base=\"${PR_NUMBER}\"")
+					 "-Dsonar.pullrequest.base=\"${PR_BASE}\"")
 	fi
 
 	while read -r package
