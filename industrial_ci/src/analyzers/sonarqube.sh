@@ -37,8 +37,8 @@ function analyzer_setup {
 	ici_asroot apt-get install -y default-jre
 
 	export BUILD_WRAPPER="sonar-build-wrapper"
-	export BUILD_WRAPPER_ARGS="--out-dir /root/sonar/bw_output"
-	export SONARQUBE_PACKAGES_FILE="/root/sonar/packages"
+	export BUILD_WRAPPER_ARGS="--out-dir ~/sonar/bw_output"
+	export SONARQUBE_PACKAGES_FILE="~/sonar/packages"
 	export TARGET_CMAKE_ARGS="${TARGET_CMAKE_ARGS} -DSONARQUBE_PACKAGES_FILE=${SONARQUBE_PACKAGES_FILE} --no-warn-unused-cli"
 	if [ -n "$TEST_COVERAGE" ]; then
 		export TARGET_CMAKE_ARGS="${TARGET_CMAKE_ARGS} -DTEST_COVERAGE=on "
