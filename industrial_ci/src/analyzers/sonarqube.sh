@@ -44,7 +44,7 @@ function analyzer_setup {
 		export TARGET_CMAKE_ARGS="${TARGET_CMAKE_ARGS} -DTEST_COVERAGE=on "
 	fi
 
-	ici_asroot touch ${SONARQUBE_PACKAGES_FILE}
+	ici_asroot touch ~/sonar/packages
 
 }
 
