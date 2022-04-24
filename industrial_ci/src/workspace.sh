@@ -181,6 +181,8 @@ function ici_setup_git_client {
   if [ -d ~/.ssh ]; then
     ici_install_pkgs_for_command ssh ssh-client
   fi
+  git config remote.origin.fetch +refs/heads/*:refs/remotes/origin/*
+  git fetch --unshallow --tags
 }
 
 function ici_vcs_import {
