@@ -32,9 +32,9 @@ function analyzer_setup {
 	ln -s ~/sonar/tools/build-wrapper-linux-x86/build-wrapper-linux-x86-64 /usr/local/bin/sonar-build-wrapper
 	ln -s ~/sonar/tools/sonar-scanner-4.4.0.2170/bin/sonar-scanner /usr/local/bin/sonar-scanner
 
-	ici_cmd wget -P /usr/lib/cmake/CodeCoverage "https://raw.githubusercontent.com/kroshu/kroshu-tools/master/cmake/CodeCoverage.cmake"
+	wget -P /usr/lib/cmake/CodeCoverage "https://raw.githubusercontent.com/kroshu/kroshu-tools/master/cmake/CodeCoverage.cmake"
 
-	ici_cmd ici_asroot apt-get install -y default-jre
+	ici_asroot apt-get install -y default-jre
 
 	export BUILD_WRAPPER="sonar-build-wrapper"
 	export BUILD_WRAPPER_ARGS="--out-dir /root/sonar/bw_output"
@@ -44,7 +44,7 @@ function analyzer_setup {
 		export TARGET_CMAKE_ARGS="${TARGET_CMAKE_ARGS} -DTEST_COVERAGE=on "
 	fi
 
-	ici_cmd ici_asroot touch ${SONARQUBE_PACKAGES_FILE}
+	ici_asroot touch ${SONARQUBE_PACKAGES_FILE}
 
 }
 
