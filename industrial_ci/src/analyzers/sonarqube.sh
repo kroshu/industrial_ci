@@ -36,6 +36,7 @@ function analyzer_setup {
 
 	ici_asroot apt-get install -y default-jre
 
+	export SONAR_TOKEN=$ANALYZER_TOKEN
 	export BUILD_WRAPPER="sonar-build-wrapper"
 	export BUILD_WRAPPER_ARGS="--out-dir /root/sonar/bw_output"
 	export SONARQUBE_PACKAGES_FILE="/root/sonar/packages"
