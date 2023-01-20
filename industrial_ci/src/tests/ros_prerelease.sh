@@ -22,7 +22,7 @@
 
 function setup_ros_buildfarm() {
     ici_install_pkgs_for_command pip3 python3-pip python3-setuptools python3-wheel
-    ici_cmd ici_quiet ici_asroot pip3 install git+https://github.com/ros-infrastructure/ros_buildfarm.git
+    ici_cmd ici_quiet ici_asroot pip3 install ros_buildfarm
 }
 
 function setup_ros_prerelease() {
@@ -65,6 +65,9 @@ function prepare_prerelease_workspaces() {
 }
 
 function prepare_ros_prerelease() {
+    if [ "$ROS_VERSION_EOL" = true ]; then
+        ici_error "$ROS_DISTRO is EOL, pre-releases test are not supported anymore."
+    fi
     if [ "$BUILDER" != "colcon" ]; then
         export BUILDER=catkin_make_isolated
     fi
@@ -95,7 +98,6 @@ function prepare_ros_prerelease() {
       CCACHE_DIR= # prevent cachedir from beeing added twice
     fi
     export DOCKER_IMAGE=${DOCKER_IMAGE:-ros:noetic-ros-core}
-    export ROS_DISTRO=noetic
 }
 
 function run_ros_prerelease() {
