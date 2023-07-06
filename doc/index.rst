@@ -29,16 +29,17 @@ The following `ROS <http://wiki.ros.org/Distributions>`__ / `ROS2 <https://index
 * `Jade <http://wiki.ros.org/jade>`__ *(EOL)*
 * `Kinetic <http://wiki.ros.org/kinetic>`__ *(EOL)*
 * `Lunar <http://wiki.ros.org/lunar>`__ *(EOL)*
-* `Melodic <http://wiki.ros.org/melodic>`__
+* `Melodic <http://wiki.ros.org/melodic>`__ *(EOL)*
 * `Noetic <http://wiki.ros.org/noetic>`__
 * `Ardent <https://index.ros.org/doc/ros2/Releases/Release-Ardent-Apalone/>`__ *(EOL)*
 * `Bouncy <https://index.ros.org/doc/ros2/Releases/Bouncy/>`__ *(EOL)*
 * `Crystal <https://index.ros.org/doc/ros2/Releases/Release-Crystal-Clemmys/>`__ *(EOL)*
 * `Dashing <https://index.ros.org/doc/ros2/Releases/Release-Dashing-Diademata/>`__ *(EOL)*
 * `Eloquent <https://index.ros.org/doc/ros2/Releases/Release-Eloquent-Elusor/>`__ *(EOL)*
-* `Foxy <https://index.ros.org/doc/ros2/Releases/Release-Foxy-Fitzroy/>`__
+* `Foxy <https://index.ros.org/doc/ros2/Releases/Release-Foxy-Fitzroy/>`__ *(EOL)*
 * `Galactic <https://docs.ros.org/en/foxy/Releases/Release-Galactic-Geochelone.html>`__ *(EOL)*
 * `Humble <https://docs.ros.org/en/humble/Releases/Release-Humble-Hawksbill.html>`__
+* `Iron <https://docs.ros.org/en/rolling/Releases/Release-Iron-Irwini.html>`__
 * `Rolling <https://index.ros.org/doc/ros2/Releases/Release-Rolling-Ridley/>`__
 
 Supported CIs
@@ -213,6 +214,7 @@ Note that some of these currently tied only to a single option, but we still lea
 * **ROS_REPOSITORY_KEY** (default: not set): Location of ROS' binary repository key; either as URL, file path or fingerprint.
 * **ROS_REPOSITORY_PATH**: Location of ROS' binary repositories where depended packages get installed from (typically both standard repo (``http://packages.ros.org/ros/ubuntu``) and `"Shadow-Fixed" repository <http://wiki.ros.org/ShadowRepository>`__ (``http://packages.ros.org/ros-shadow-fixed/ubuntu``)). Since version 0.3.4, ``ROS_REPO`` is recommended, and ``ROS_REPOSITORY_PATH`` is for more intermediate usage only (e.g. to specify your own binary repository (non-standard / in house)). Backward compatibility is preserved.
 * **ROSDEP_SKIP_KEYS** (default: not set): space-separated list of keys that should get skipped by ``rosdep install``.
+* **ROSDEP_SOURCES_VERSION** (default: not set): If set, patch the files in /etc/ros/rosdep/sources.list.d/*.list to use this version instead of master.
 * **ROSINSTALL_FILENAME** (*deprecated*, default: ``.travis.rosinstall``): Only used when ``UPSTREAM_WORKSPACE`` is set to ``file``. See ``UPSTREAM_WORKSPACE`` description.
 * **PYLINT_ARGS** (default: not set): pass command line arguments to ``pylint`` command (e.g. ``--output-format=parseable --errors-only``) - can e.g. be used to ``ignore_modules``
 * **PYLINT_CHECK** (default: false): If ``true``, run ``pylint`` checks
