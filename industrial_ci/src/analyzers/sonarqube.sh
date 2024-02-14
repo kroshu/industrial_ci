@@ -21,11 +21,11 @@ function analyzer_setup {
 	ici_install_pkgs_for_command wget wget
 	ici_install_pkgs_for_command ca-certificates ca-certificates
 	wget -P ~/sonar/downloads https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip
-	wget -P ~/sonar/downloads https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.4.0.2170.zip
+	wget -P ~/sonar/downloads https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-linux.zip
 
 	ici_install_pkgs_for_command unzip unzip
 	unzip ~/sonar/downloads/build-wrapper-linux-x86.zip -d ~/sonar/tools
-	unzip ~/sonar/downloads/sonar-scanner-cli-4.4.0.2170.zip -d ~/sonar/tools
+	unzip ~/sonar/downloads/sonar-scanner-cli-5.0.1.3006-linux.zip -d ~/sonar/tools
 
 	chmod +x ~/sonar/tools/build-wrapper-linux-x86/build-wrapper-linux-x86-64
 
