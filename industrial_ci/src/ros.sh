@@ -38,7 +38,7 @@ function  _ros2_defaults {
 
 function _ros_is_eol {
     export ROS_VERSION_EOL=true
-    export ROSDEP_SOURCES_VERSION=${ROSDEP_SOURCES_VERSION:-$1}
+    export ROSDISTRO_INDEX_VERSION=${ROSDISTRO_INDEX_VERSION:-$1}
 }
 
 function _set_ros_defaults {
@@ -95,7 +95,13 @@ function _set_ros_defaults {
         _ros2_defaults "jammy"
         ;;
     "rolling")
-        _ros2_defaults "jammy"
+        _ros2_defaults "noble"
+        if [ "$OS_CODE_NAME" == "jammy" ]; then
+            if [ -z "$ROSDISTRO_INDEX_VERSION" ]; then
+                ici_warn "Pinning rolling to latest support version on jammy: 2024-02-28"
+                export ROSDISTRO_INDEX_VERSION=rolling/2024-02-28
+            fi
+        fi
         ;;
     "false")
         unset ROS_DISTRO
